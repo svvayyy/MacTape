@@ -34,10 +34,6 @@ The project currently requires macOS 15 or newer because it uses ScreenCaptureKi
 
 MacTape asks for Screen Recording permission when it first discovers capture sources. Microphone permission is requested only when microphone recording is enabled.
 
-## Repository rules
-
-The project rules live in [CODING_RULES.md](CODING_RULES.md). Product and interface decisions live in [CREED.md](CREED.md).
-
 ## Privacy
 
 See [PRIVACY.md](PRIVACY.md). The short version is simple: recordings stay on the Mac.

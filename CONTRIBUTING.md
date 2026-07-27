@@ -2,7 +2,7 @@
 
 Thank you for helping make recording simpler.
 
-Before contributing, read [CREED.md](CREED.md) and [CODING_RULES.md](CODING_RULES.md).
+Open an issue before beginning a large feature or architectural change.
 
 ## Expectations
 
