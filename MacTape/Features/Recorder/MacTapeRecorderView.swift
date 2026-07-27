@@ -37,7 +37,7 @@ struct MacTapeRecorderView: View {
 
     private var header: some View {
         HStack {
-            Text("MacTape")
+            Text("Mac*Tape*")
                 .macTapeText(.title)
 
             Spacer()
