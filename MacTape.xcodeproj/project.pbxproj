@@ -1,0 +1,535 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E74D87E7A4D209402E2AC84 /* MacTapeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EF97376CFF56446B16D5A8 /* MacTapeSettingsView.swift */; };
+		18CEA80747DC5942BEDE9D06 /* CaptureDimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0899E543A0538A203450B9 /* CaptureDimensions.swift */; };
+		340C3772E14923689196DD6E /* CaptureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A1EA4A883032C7EF7CBE0A /* CaptureCatalog.swift */; };
+		3C6C142B08116C1C3E322598 /* MacTapeTargetPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC69A955FF031E4538EEA2 /* MacTapeTargetPicker.swift */; };
+		42FCC22EC8923427D831F9B1 /* MacTapeAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1409335DB91F4723D45BF60A /* MacTapeAppModel.swift */; };
+		65FF9B2C898BE3817EE3A90D /* MacTapeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E920777B4C062DF7A28A6A5 /* MacTapeApp.swift */; };
+		6DBF5F2D99221707426708F4 /* MacTapeRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FC6B3A344A2225CC075FBE /* MacTapeRecorderView.swift */; };
+		7F4768E40D8E054D8784026C /* MacTapeRecordingButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B890A5C47FEC213E2D94BD5D /* MacTapeRecordingButtonStyle.swift */; };
+		9118E4C3A2DAE45F216D2A37 /* RecordingFileNamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303B20A1C179D36CF0BC4C11 /* RecordingFileNamer.swift */; };
+		934376C0EE08AF30938EB64F /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6D59437A7914386157855D8 /* RecordingState.swift */; };
+		936B708E212D7A3C951E7C93 /* MacTapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D660979502D08B40766E4A /* MacTapeTests.swift */; };
+		B14DFCFFCEBE0A549348F5E0 /* CaptureTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB388CDCB3D00BB330A24A3 /* CaptureTarget.swift */; };
+		B8DBA7DB1B0FB0E024DA2CB3 /* RecordingDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF37527D82C6850DB068A6A /* RecordingDurationFormatter.swift */; };
+		C587EC890F7541B026B3C06D /* MacTapeStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3D982B31985A17D3E9081A /* MacTapeStatusPill.swift */; };
+		F037E8809CE4B2C72B65E7F4 /* MacTapeSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8CCB786A95126280363CA /* MacTapeSurface.swift */; };
+		F3250A910EF01D29E8C6754F /* MacTapeSourceToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1087F546C23420E242B4F7B5 /* MacTapeSourceToggle.swift */; };
+		F63A45F1A14730536B6775AB /* CaptureRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BEDB242E8EDE525027A304 /* CaptureRecorder.swift */; };
+		F85E1A298C37A252F998B767 /* MacTapeTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B72F2AD92B8988F0412899B /* MacTapeTheme.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		80DD4E77CFEC35B5D22BA9C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71320307711C7B1F6BA57DB3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B13263574B0AE2B58C9C2596;
+			remoteInfo = MacTape;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01BEDB242E8EDE525027A304 /* CaptureRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureRecorder.swift; sourceTree = "<group>"; };
+		0BB388CDCB3D00BB330A24A3 /* CaptureTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTarget.swift; sourceTree = "<group>"; };
+		1087F546C23420E242B4F7B5 /* MacTapeSourceToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeSourceToggle.swift; sourceTree = "<group>"; };
+		1409335DB91F4723D45BF60A /* MacTapeAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeAppModel.swift; sourceTree = "<group>"; };
+		2B72F2AD92B8988F0412899B /* MacTapeTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeTheme.swift; sourceTree = "<group>"; };
+		2DF37527D82C6850DB068A6A /* RecordingDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDurationFormatter.swift; sourceTree = "<group>"; };
+		2E0899E543A0538A203450B9 /* CaptureDimensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDimensions.swift; sourceTree = "<group>"; };
+		303B20A1C179D36CF0BC4C11 /* RecordingFileNamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingFileNamer.swift; sourceTree = "<group>"; };
+		4BB8CCB786A95126280363CA /* MacTapeSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeSurface.swift; sourceTree = "<group>"; };
+		5987151779B7CAD424963D8C /* MacTape.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacTape.entitlements; sourceTree = "<group>"; };
+		5DAA9C78DE170EF1269337CB /* MacTapeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacTapeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B3D982B31985A17D3E9081A /* MacTapeStatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeStatusPill.swift; sourceTree = "<group>"; };
+		6E920777B4C062DF7A28A6A5 /* MacTapeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeApp.swift; sourceTree = "<group>"; };
+		78A1EA4A883032C7EF7CBE0A /* CaptureCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCatalog.swift; sourceTree = "<group>"; };
+		A1EC69A955FF031E4538EEA2 /* MacTapeTargetPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeTargetPicker.swift; sourceTree = "<group>"; };
+		A9D660979502D08B40766E4A /* MacTapeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeTests.swift; sourceTree = "<group>"; };
+		B890A5C47FEC213E2D94BD5D /* MacTapeRecordingButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeRecordingButtonStyle.swift; sourceTree = "<group>"; };
+		BFDACC7E85E828582AE8385C /* MacTape.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacTape.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2FC6B3A344A2225CC075FBE /* MacTapeRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeRecorderView.swift; sourceTree = "<group>"; };
+		CFEAB47156E99D81608E8332 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D6D59437A7914386157855D8 /* RecordingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingState.swift; sourceTree = "<group>"; };
+		D9EF97376CFF56446B16D5A8 /* MacTapeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacTapeSettingsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		027044F7C08A2718E9F047BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BFDACC7E85E828582AE8385C /* MacTape.app */,
+				5DAA9C78DE170EF1269337CB /* MacTapeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05449FA88ACA0F92B87A7D14 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6E920777B4C062DF7A28A6A5 /* MacTapeApp.swift */,
+				1409335DB91F4723D45BF60A /* MacTapeAppModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		17FA1EF1897D0811FA23A90A /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				7FB98D1BFBFF60D447189602 /* Recorder */,
+				C77FD88596D3AA6D7F3D6340 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		2D5C55DBF865361EB57F3846 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				78A1EA4A883032C7EF7CBE0A /* CaptureCatalog.swift */,
+				2E0899E543A0538A203450B9 /* CaptureDimensions.swift */,
+				01BEDB242E8EDE525027A304 /* CaptureRecorder.swift */,
+			);
+			path = Capture;
+			sourceTree = "<group>";
+		};
+		33E39015884C34E3F4F0722D /* MacTape */ = {
+			isa = PBXGroup;
+			children = (
+				05449FA88ACA0F92B87A7D14 /* App */,
+				2D5C55DBF865361EB57F3846 /* Capture */,
+				F1D490DED2965C85FAB4E9C4 /* Design */,
+				17FA1EF1897D0811FA23A90A /* Features */,
+				54504E11B14EDF9FAC9DD178 /* Models */,
+				DA7C31041492912C0C081E0E /* Resources */,
+			);
+			path = MacTape;
+			sourceTree = "<group>";
+		};
+		54504E11B14EDF9FAC9DD178 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0BB388CDCB3D00BB330A24A3 /* CaptureTarget.swift */,
+				2DF37527D82C6850DB068A6A /* RecordingDurationFormatter.swift */,
+				303B20A1C179D36CF0BC4C11 /* RecordingFileNamer.swift */,
+				D6D59437A7914386157855D8 /* RecordingState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7CBDDBD7A3BFA131B0163D9A = {
+			isa = PBXGroup;
+			children = (
+				33E39015884C34E3F4F0722D /* MacTape */,
+				FDD9BE32C9881E13F2748921 /* MacTapeTests */,
+				027044F7C08A2718E9F047BD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7FB98D1BFBFF60D447189602 /* Recorder */ = {
+			isa = PBXGroup;
+			children = (
+				C2FC6B3A344A2225CC075FBE /* MacTapeRecorderView.swift */,
+				A1EC69A955FF031E4538EEA2 /* MacTapeTargetPicker.swift */,
+			);
+			path = Recorder;
+			sourceTree = "<group>";
+		};
+		C77FD88596D3AA6D7F3D6340 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D9EF97376CFF56446B16D5A8 /* MacTapeSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		DA7C31041492912C0C081E0E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CFEAB47156E99D81608E8332 /* Info.plist */,
+				5987151779B7CAD424963D8C /* MacTape.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F1D490DED2965C85FAB4E9C4 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				B890A5C47FEC213E2D94BD5D /* MacTapeRecordingButtonStyle.swift */,
+				1087F546C23420E242B4F7B5 /* MacTapeSourceToggle.swift */,
+				6B3D982B31985A17D3E9081A /* MacTapeStatusPill.swift */,
+				4BB8CCB786A95126280363CA /* MacTapeSurface.swift */,
+				2B72F2AD92B8988F0412899B /* MacTapeTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		FDD9BE32C9881E13F2748921 /* MacTapeTests */ = {
+			isa = PBXGroup;
+			children = (
+				A9D660979502D08B40766E4A /* MacTapeTests.swift */,
+			);
+			path = MacTapeTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		343EA433577111357E902459 /* MacTapeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6457728A650C38ED0CEBC572 /* Build configuration list for PBXNativeTarget "MacTapeTests" */;
+			buildPhases = (
+				E1A4F28666139EB0F0B43158 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				040A1F5C183C864D1F138FB6 /* PBXTargetDependency */,
+			);
+			name = MacTapeTests;
+			packageProductDependencies = (
+			);
+			productName = MacTapeTests;
+			productReference = 5DAA9C78DE170EF1269337CB /* MacTapeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B13263574B0AE2B58C9C2596 /* MacTape */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 53A2A0209D8701C9E4DC904E /* Build configuration list for PBXNativeTarget "MacTape" */;
+			buildPhases = (
+				626FAAD8A8CF12544CDA099F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacTape;
+			packageProductDependencies = (
+			);
+			productName = MacTape;
+			productReference = BFDACC7E85E828582AE8385C /* MacTape.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		71320307711C7B1F6BA57DB3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					343EA433577111357E902459 = {
+						ProvisioningStyle = Automatic;
+					};
+					B13263574B0AE2B58C9C2596 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 63562E4BE19698CC2E0F7BF6 /* Build configuration list for PBXProject "MacTape" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7CBDDBD7A3BFA131B0163D9A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 027044F7C08A2718E9F047BD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B13263574B0AE2B58C9C2596 /* MacTape */,
+				343EA433577111357E902459 /* MacTapeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		626FAAD8A8CF12544CDA099F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				340C3772E14923689196DD6E /* CaptureCatalog.swift in Sources */,
+				18CEA80747DC5942BEDE9D06 /* CaptureDimensions.swift in Sources */,
+				F63A45F1A14730536B6775AB /* CaptureRecorder.swift in Sources */,
+				B14DFCFFCEBE0A549348F5E0 /* CaptureTarget.swift in Sources */,
+				65FF9B2C898BE3817EE3A90D /* MacTapeApp.swift in Sources */,
+				42FCC22EC8923427D831F9B1 /* MacTapeAppModel.swift in Sources */,
+				6DBF5F2D99221707426708F4 /* MacTapeRecorderView.swift in Sources */,
+				7F4768E40D8E054D8784026C /* MacTapeRecordingButtonStyle.swift in Sources */,
+				0E74D87E7A4D209402E2AC84 /* MacTapeSettingsView.swift in Sources */,
+				F3250A910EF01D29E8C6754F /* MacTapeSourceToggle.swift in Sources */,
+				C587EC890F7541B026B3C06D /* MacTapeStatusPill.swift in Sources */,
+				F037E8809CE4B2C72B65E7F4 /* MacTapeSurface.swift in Sources */,
+				3C6C142B08116C1C3E322598 /* MacTapeTargetPicker.swift in Sources */,
+				F85E1A298C37A252F998B767 /* MacTapeTheme.swift in Sources */,
+				B8DBA7DB1B0FB0E024DA2CB3 /* RecordingDurationFormatter.swift in Sources */,
+				9118E4C3A2DAE45F216D2A37 /* RecordingFileNamer.swift in Sources */,
+				934376C0EE08AF30938EB64F /* RecordingState.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E1A4F28666139EB0F0B43158 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				936B708E212D7A3C951E7C93 /* MacTapeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		040A1F5C183C864D1F138FB6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B13263574B0AE2B58C9C2596 /* MacTape */;
+			targetProxy = 80DD4E77CFEC35B5D22BA9C4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1049535331E0267748E24201 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mactape.recorder.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacTape.app/Contents/MacOS/MacTape";
+			};
+			name = Release;
+		};
+		3624683D31B7ED2B76C7480F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = MacTape/Resources/MacTape.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacTape/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mactape.recorder;
+				PRODUCT_NAME = MacTape;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A7B69A671345C3AC66B482E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mactape.recorder.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacTape.app/Contents/MacOS/MacTape";
+			};
+			name = Debug;
+		};
+		B41DACAFA0A3FEC7AD2193E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = MacTape/Resources/MacTape.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacTape/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mactape.recorder;
+				PRODUCT_NAME = MacTape;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B7CDD5B77DBCBAF0A08EB6D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		D35172F63DB50501D87E6334 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		53A2A0209D8701C9E4DC904E /* Build configuration list for PBXNativeTarget "MacTape" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3624683D31B7ED2B76C7480F /* Debug */,
+				B41DACAFA0A3FEC7AD2193E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		63562E4BE19698CC2E0F7BF6 /* Build configuration list for PBXProject "MacTape" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D35172F63DB50501D87E6334 /* Debug */,
+				B7CDD5B77DBCBAF0A08EB6D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6457728A650C38ED0CEBC572 /* Build configuration list for PBXNativeTarget "MacTapeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7B69A671345C3AC66B482E0 /* Debug */,
+				1049535331E0267748E24201 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 71320307711C7B1F6BA57DB3 /* Project object */;
+}
