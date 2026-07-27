@@ -29,9 +29,12 @@ final class MacTapeAppModel {
     var elapsedTime: TimeInterval = 0
     var lastRecordingURL: URL?
     var isRefreshingTargets = false
-    var screenPermissionGranted = CGPreflightScreenCaptureAccess()
+    var screenPermissionGranted: Bool
 
     private let preferences: UserDefaults
+    private let screenAccessPreflight: () -> Bool
+    private let screenAccessRequest: () -> Bool
+    private let captureCatalogLoader: () async throws -> CaptureCatalog.Snapshot
     private var currentApplication: SCRunningApplication?
     private var recorder: CaptureRecorder?
     private var recordingStartedAt: Date?
@@ -39,9 +42,18 @@ final class MacTapeAppModel {
 
     init(
         preferences: UserDefaults = .standard,
-        fileManager: FileManager = .default
+        fileManager: FileManager = .default,
+        screenAccessPreflight: @escaping () -> Bool = CGPreflightScreenCaptureAccess,
+        screenAccessRequest: @escaping () -> Bool = CGRequestScreenCaptureAccess,
+        captureCatalogLoader: @escaping () async throws -> CaptureCatalog.Snapshot = {
+            try await CaptureCatalog.load()
+        }
     ) {
         self.preferences = preferences
+        self.screenAccessPreflight = screenAccessPreflight
+        self.screenAccessRequest = screenAccessRequest
+        self.captureCatalogLoader = captureCatalogLoader
+        screenPermissionGranted = screenAccessPreflight()
 
         if preferences.object(forKey: PreferenceKey.systemAudio) == nil {
             isSystemAudioEnabled = true
@@ -92,26 +104,13 @@ final class MacTapeAppModel {
     }
 
     func refreshTargets(requestPermission: Bool = false) async {
-        guard !recordingState.isBusy else {
+        guard !recordingState.isBusy, !isRefreshingTargets else {
             return
         }
 
-        if requestPermission {
-            screenPermissionGranted = CGRequestScreenCaptureAccess()
-        } else {
-            screenPermissionGranted = CGPreflightScreenCaptureAccess()
-        }
-
-        guard screenPermissionGranted else {
-            captureTargets = []
-            currentApplication = nil
-
-            if case .failed = recordingState {
-                recordingState = .idle
-            }
-
-            return
-        }
+        let reportedPermission = requestPermission
+            ? screenAccessRequest()
+            : screenAccessPreflight()
 
         isRefreshingTargets = true
 
@@ -120,7 +119,7 @@ final class MacTapeAppModel {
         }
 
         do {
-            let snapshot = try await CaptureCatalog.load()
+            let snapshot = try await captureCatalogLoader()
             captureTargets = snapshot.targets
             currentApplication = snapshot.currentApplication
             screenPermissionGranted = true
@@ -134,7 +133,14 @@ final class MacTapeAppModel {
             }
         } catch {
             captureTargets = []
-            recordingState = .failed(error.localizedDescription)
+            currentApplication = nil
+            screenPermissionGranted = reportedPermission
+
+            if reportedPermission {
+                recordingState = .failed(error.localizedDescription)
+            } else if case .failed = recordingState {
+                recordingState = .idle
+            }
         }
     }
 

@@ -86,4 +86,44 @@ struct MacTapeTests {
         #expect(!RecordingState.stopping.isRecording)
         #expect(!RecordingState.idle.isRecording)
     }
+
+    @Test("ScreenCaptureKit can confirm access after a false preflight result")
+    @MainActor
+    func screenAccessFalseNegativeRecovery() async {
+        let preferences = UserDefaults(suiteName: UUID().uuidString)!
+        let model = MacTapeAppModel(
+            preferences: preferences,
+            screenAccessPreflight: { false },
+            screenAccessRequest: { false },
+            captureCatalogLoader: {
+                CaptureCatalog.Snapshot(targets: [], currentApplication: nil)
+            }
+        )
+
+        await model.refreshTargets()
+
+        #expect(model.screenPermissionGranted)
+        #expect(model.recordingState == .idle)
+    }
+
+    @Test("Denied screen access remains a setup state")
+    @MainActor
+    func deniedScreenAccess() async {
+        let preferences = UserDefaults(suiteName: UUID().uuidString)!
+        let model = MacTapeAppModel(
+            preferences: preferences,
+            screenAccessPreflight: { false },
+            screenAccessRequest: { false },
+            captureCatalogLoader: {
+                throw TestFailure()
+            }
+        )
+
+        await model.refreshTargets()
+
+        #expect(!model.screenPermissionGranted)
+        #expect(model.recordingState == .idle)
+    }
 }
+
+private struct TestFailure: Error {}

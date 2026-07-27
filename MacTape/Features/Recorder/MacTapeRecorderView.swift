@@ -28,6 +28,11 @@ struct MacTapeRecorderView: View {
         .task {
             await appModel.prepare()
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task {
+                await appModel.refreshTargets()
+            }
+        }
     }
 
     private var header: some View {
