@@ -34,6 +34,14 @@ struct MacTapeRecorderView: View {
                 await appModel.applicationDidBecomeActive()
             }
         }
+        .onDisappear {
+            isCancelConfirmationPresented = false
+        }
+        .onChange(of: appModel.recordingState) { _, recordingState in
+            if !recordingState.hasActiveSession {
+                isCancelConfirmationPresented = false
+            }
+        }
     }
 
     private var header: some View {
@@ -263,6 +271,19 @@ struct MacTapeRecorderView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, MacTapeSpacing.large)
 
+            Group {
+                if isCancelConfirmationPresented {
+                    cancelRecordingConfirmation
+                } else {
+                    recordingControls
+                }
+            }
+            .animation(MacTapeMotion.snappy, value: isCancelConfirmationPresented)
+        }
+    }
+
+    private var recordingControls: some View {
+        VStack(spacing: MacTapeSpacing.xLarge) {
             HStack(spacing: MacTapeSpacing.small) {
                 Button {
                     Task {
@@ -286,10 +307,7 @@ struct MacTapeRecorderView: View {
                     }
                 }
                 .buttonStyle(MacTapeSecondaryButtonStyle())
-                .disabled(
-                    appModel.recordingState == .pausing
-                        || appModel.recordingState == .resuming
-                )
+                .disabled(isRecordingTransitioning)
 
                 Button {
                     Task {
@@ -305,10 +323,7 @@ struct MacTapeRecorderView: View {
                     }
                 }
                 .buttonStyle(MacTapeRecordingButtonStyle(role: .stop))
-                .disabled(
-                    appModel.recordingState == .pausing
-                        || appModel.recordingState == .resuming
-                )
+                .disabled(isRecordingTransitioning)
                 .keyboardShortcut(.escape, modifiers: [])
             }
 
@@ -318,21 +333,49 @@ struct MacTapeRecorderView: View {
             .buttonStyle(.plain)
             .macTapeText(.detail)
             .foregroundStyle(MacTapeColor.recording)
-            .disabled(
-                appModel.recordingState == .pausing
-                    || appModel.recordingState == .resuming
-            )
-            .alert("Discard this recording?", isPresented: $isCancelConfirmationPresented) {
-                Button("Keep Recording", role: .cancel) {}
-                Button("Discard", role: .destructive) {
-                    Task {
-                        await appModel.cancelRecording()
+            .disabled(isRecordingTransitioning)
+        }
+    }
+
+    private var cancelRecordingConfirmation: some View {
+        MacTapeSurface {
+            VStack(alignment: .leading, spacing: MacTapeSpacing.medium) {
+                HStack(alignment: .top, spacing: MacTapeSpacing.medium) {
+                    Image(systemName: "trash.fill")
+                        .foregroundStyle(MacTapeColor.recording)
+
+                    VStack(alignment: .leading, spacing: MacTapeSpacing.xSmall) {
+                        Text("Discard this recording?")
+                            .macTapeText(.body)
+
+                        Text("MacTape will delete every recorded segment.")
+                            .macTapeText(.detail)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-            } message: {
-                Text("MacTape will delete every recorded segment.")
+
+                HStack(spacing: MacTapeSpacing.small) {
+                    Button("Keep Recording") {
+                        isCancelConfirmationPresented = false
+                    }
+                    .buttonStyle(MacTapeSecondaryButtonStyle())
+                    .keyboardShortcut(.cancelAction)
+
+                    Button("Discard", role: .destructive) {
+                        Task {
+                            await appModel.cancelRecording()
+                        }
+                    }
+                    .buttonStyle(MacTapeRecordingButtonStyle(role: .stop))
+                }
             }
         }
+        .transition(.opacity.combined(with: .scale(scale: 0.98)))
+    }
+
+    private var isRecordingTransitioning: Bool {
+        appModel.recordingState == .pausing
+            || appModel.recordingState == .resuming
     }
 
     private var pauseButtonTitle: String {

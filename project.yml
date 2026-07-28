@@ -29,7 +29,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: MacTape/Resources/MacTape.entitlements
         ENABLE_APP_SANDBOX: YES
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: 1
+        CURRENT_PROJECT_VERSION: 2
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
     scheme:
       testTargets:
