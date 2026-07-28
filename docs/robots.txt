@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://svvayyy.github.io/MacTape/sitemap.xml
