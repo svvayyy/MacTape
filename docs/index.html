@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MacTape — Record your Mac. Keep the file.</title>
+<meta name="description" content="MacTape is a focused, open-source screen recorder for macOS. Record a display or window with system audio and microphone, pause cleanly, and get an ordinary MP4 saved on your Mac.">
+<meta name="theme-color" content="#0b0d12">
+<link rel="icon" type="image/png" href="assets/favicon-128.png">
+<link rel="apple-touch-icon" href="assets/icon-256.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MacTape — Record your Mac. Keep the file.">
+<meta property="og:description" content="A focused, open-source screen recorder that lives in your macOS menu bar and saves ordinary MP4 files. Local only. No account.">
+<meta property="og:url" content="https://svvayyy.github.io/MacTape/">
+<meta property="og:image" content="https://svvayyy.github.io/MacTape/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --red:#eb2e33;
+    --red-deep:#c71c24;
+    --red-glow:rgba(255,50,55,.24);
+    --bg:#0b0d12;
+    --bg-2:#171b22;
+    --panel:rgba(255,255,255,.035);
+    --panel-2:rgba(255,255,255,.055);
+    --line:rgba(255,255,255,.09);
+    --line-soft:rgba(255,255,255,.06);
+    --ink:#f7f8fa;
+    --ink-2:rgba(247,248,250,.62);
+    --ink-3:rgba(247,248,250,.40);
+    --green:#30d158;
+    --orange:#ff9f0a;
+    --r-s:8px; --r-m:12px; --r-l:18px; --r-xl:26px; --r-pill:999px;
+    --max:1120px;
+    --ease:cubic-bezier(.22,.68,.32,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- ambient background ---------- */
+  .bg-field{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 620px at 82% 6%, rgba(255,50,55,.20), transparent 62%),
+      radial-gradient(760px 560px at 4% 42%, rgba(255,50,55,.10), transparent 60%),
+      radial-gradient(1000px 700px at 60% 108%, rgba(255,50,55,.13), transparent 62%),
+      linear-gradient(160deg,#171b22 0%, #0b0d12 58%, #0a0c10 100%);
+  }
+  .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.055;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  }
+
+  .wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 24px}
+
+  /* ---------- logo mark ---------- */
+  .mark{width:26px;height:22px;flex:none}
+  .mark svg{width:100%;height:100%;display:block;overflow:visible}
+
+  /* ---------- nav ---------- */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:saturate(160%) blur(18px);
+    -webkit-backdrop-filter:saturate(160%) blur(18px);
+    background:rgba(11,13,18,.62);border-bottom:1px solid transparent;transition:border-color .3s var(--ease),background .3s var(--ease)}
+  header.stuck{border-bottom-color:var(--line-soft);background:rgba(11,13,18,.82)}
+  nav{display:flex;align-items:center;gap:20px;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em}
+  .brand em{font-style:normal;font-weight:500;opacity:.62}
+  .nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px;color:var(--ink-2)}
+  .nav-links a{transition:color .18s var(--ease)}
+  .nav-links a:hover{color:var(--ink)}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:9px;height:44px;padding:0 22px;
+    border-radius:var(--r-pill);font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+    border:1px solid transparent;cursor:pointer;white-space:nowrap;
+    transition:transform .18s var(--ease),background .18s var(--ease),border-color .18s var(--ease),box-shadow .3s var(--ease)}
+  .btn:active{transform:scale(.975)}
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 8px 30px -10px rgba(235,46,51,.75)}
+  .btn-primary:hover{background:var(--red-deep);box-shadow:0 12px 40px -10px rgba(235,46,51,.9)}
+  .btn-ghost{background:var(--panel);color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{background:var(--panel-2);border-color:rgba(255,255,255,.16)}
+  .btn-sm{height:36px;padding:0 16px;font-size:13.5px}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:96px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;height:30px;padding:0 13px 0 10px;
+    border:1px solid rgba(235,46,51,.32);background:rgba(235,46,51,.10);border-radius:var(--r-pill);
+    font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#ff6b6f}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(235,46,51,.6);animation:pulse 2.4s var(--ease) infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(235,46,51,.55)}70%{box-shadow:0 0 0 9px rgba(235,46,51,0)}100%{box-shadow:0 0 0 0 rgba(235,46,51,0)}}
+
+  h1{margin:22px 0 0;font-size:clamp(42px,5.2vw,68px);line-height:1.04;font-weight:800;letter-spacing:-.035em}
+  h1 .fade{display:inline-block;padding-bottom:.06em;
+    background:linear-gradient(180deg,#fff 25%,rgba(247,248,250,.66));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{margin-top:22px;font-size:clamp(16.5px,1.5vw,19px);line-height:1.6;color:var(--ink-2);max-width:29em}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .hero-meta{margin-top:26px;font-size:13px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:8px 18px}
+  .hero-meta b{color:var(--ink-2);font-weight:600}
+
+  /* app shot */
+  .shot{position:relative;justify-self:center;width:100%;max-width:392px}
+  .shot::before{content:"";position:absolute;inset:-16% -22% -30%;
+    background:radial-gradient(closest-side,rgba(255,50,55,.30),transparent 72%);filter:blur(18px);z-index:0}
+  .shot-frame{position:relative;z-index:1;border-radius:22px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 44px 90px -34px rgba(0,0,0,.92), 0 0 0 1px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+    animation:float 9s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .shot-frame img{width:100%}
+
+  /* ---------- ticker ---------- */
+  .ticker{margin-top:56px;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+    overflow:hidden;background:rgba(255,255,255,.015)}
+  .ticker-track{display:flex;gap:0;width:max-content;animation:slide 34s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker-item{display:flex;align-items:center;gap:14px;padding:15px 26px;font-size:12px;font-weight:700;
+    letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+  .ticker-item span{width:4px;height:4px;border-radius:50%;background:var(--red);opacity:.85}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- sections ---------- */
+  section{position:relative}
+  .band{padding:96px 0}
+  .band-head{max-width:620px;margin-bottom:48px}
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:var(--red);opacity:.92}
+  h2{margin-top:16px;font-size:clamp(30px,3.9vw,46px);line-height:1.05;font-weight:800;letter-spacing:-.032em}
+  .sub{margin-top:16px;font-size:16.5px;color:var(--ink-2);line-height:1.62}
+
+  /* ---------- feature cards ---------- */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{position:relative;padding:26px 24px 28px;border-radius:var(--r-l);
+    border:1px solid var(--line-soft);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.014));
+    overflow:hidden;transition:transform .32s var(--ease),border-color .32s var(--ease),background .32s var(--ease)}
+  .card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+    background:radial-gradient(420px 220px at var(--mx,50%) var(--my,0%),rgba(255,50,55,.16),transparent 70%);
+    transition:opacity .35s var(--ease)}
+  .card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.14)}
+  .card:hover::after{opacity:1}
+  .card .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:rgba(235,46,51,.13);border:1px solid rgba(235,46,51,.24);color:#ff5f63;margin-bottom:18px}
+  .card .ico svg{width:19px;height:19px}
+  .card h3{font-size:16.5px;font-weight:650;letter-spacing:-.015em}
+  .card p{margin-top:8px;font-size:14.5px;line-height:1.58;color:var(--ink-2)}
+
+  /* ---------- split ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .split.rev .split-media{order:-1}
+  .split-media{position:relative;display:flex;justify-content:center}
+  .split-media::before{content:"";position:absolute;inset:-8% -14% -18%;
+    background:radial-gradient(closest-side,rgba(255,50,55,.20),transparent 72%);filter:blur(16px)}
+  .split-media img{position:relative;border-radius:20px;max-width:340px;width:100%;
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 40px 80px -34px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.06)}
+
+  /* ---------- resolution chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+  .chip{display:inline-flex;flex-direction:column;gap:2px;padding:11px 17px;border-radius:var(--r-m);
+    border:1px solid var(--line);background:rgba(255,255,255,.035);
+    transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease)}
+  .chip:hover{border-color:rgba(235,46,51,.5);background:rgba(235,46,51,.09);transform:translateY(-2px)}
+  .chip b{font-size:14.5px;font-weight:650;letter-spacing:-.01em}
+  .chip i{font-style:normal;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+  /* ---------- timeline (pause demo) ---------- */
+  .tl{margin-top:40px;padding:30px 28px 26px;border-radius:var(--r-l);
+    border:1px solid var(--line-soft);background:rgba(255,255,255,.024)}
+  .tl-row{margin-bottom:26px}
+  .tl-row:last-child{margin-bottom:0}
+  .tl-label{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:11px}
+  .tl-label u{text-decoration:none;font-variant-numeric:tabular-nums;letter-spacing:.05em;color:var(--ink-2)}
+  .tl-bar{display:flex;height:34px;gap:4px;transition:gap .9s var(--ease)}
+  .seg{flex-basis:0;min-width:0;border-radius:7px;
+    transition:flex-grow 1.05s var(--ease),opacity .6s var(--ease),background .6s var(--ease)}
+  .seg-rec{background:linear-gradient(180deg,#f2464b,var(--red-deep));flex-grow:1;
+    box-shadow:0 6px 22px -10px rgba(235,46,51,.85)}
+  .seg-gap{flex-grow:.85;border-radius:7px;opacity:1;
+    background:repeating-linear-gradient(115deg,rgba(255,255,255,.10) 0 7px,rgba(255,255,255,.028) 7px 14px);
+    border:1px dashed rgba(255,255,255,.17);display:grid;place-items:center;
+    font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);overflow:hidden}
+  .tl.run .tl-out .seg-gap{flex-grow:.0001;opacity:0;border-width:0}
+  .tl.run .tl-out .tl-bar{gap:0}
+  .tl.run .tl-out .seg-rec:first-child{border-radius:7px 0 0 7px}
+  .tl.run .tl-out .seg-rec:last-child{border-radius:0 7px 7px 0}
+  .tl-note{margin-top:20px;font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;gap:9px}
+  .tl-note svg{width:15px;height:15px;color:var(--green);flex:none}
+
+  /* ---------- privacy ---------- */
+  .zeros{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
+  .zero{padding:26px 22px;border-radius:var(--r-l);border:1px solid var(--line-soft);
+    background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));text-align:left}
+  .zero b{display:block;font-size:46px;line-height:1;font-weight:800;letter-spacing:-.05em;
+    background:linear-gradient(180deg,#fff,rgba(247,248,250,.52));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .zero span{display:block;margin-top:10px;font-size:13.5px;color:var(--ink-2)}
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:12px 32px;margin-top:36px}
+  .checklist li{list-style:none;display:flex;gap:11px;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .checklist svg{width:17px;height:17px;flex:none;margin-top:3px;color:var(--green)}
+  .quote{margin-top:44px;padding:26px 28px;border-radius:var(--r-l);border:1px solid rgba(235,46,51,.22);
+    background:linear-gradient(120deg,rgba(235,46,51,.09),rgba(235,46,51,.02));
+    font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.45}
+  .quote small{display:block;margin-top:10px;font-size:13.5px;font-weight:400;letter-spacing:0;color:var(--ink-2)}
+
+  /* ---------- states ---------- */
+  .states{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px}
+  .state{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 15px;border-radius:var(--r-pill);
+    border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px;color:var(--ink-2);
+    transition:all .4s var(--ease)}
+  .state i{width:7px;height:7px;border-radius:50%;background:var(--ink-3);transition:all .4s var(--ease)}
+  .state.on{border-color:rgba(235,46,51,.55);background:rgba(235,46,51,.13);color:#fff}
+  .state.on i{background:var(--red);box-shadow:0 0 10px rgba(235,46,51,.9)}
+
+  /* ---------- stack ---------- */
+  .stack{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px}
+  .row{display:flex;gap:16px;padding:20px 22px;border-radius:var(--r-m);
+    border:1px solid var(--line-soft);background:rgba(255,255,255,.022);
+    transition:border-color .3s var(--ease),background .3s var(--ease)}
+  .row:hover{border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.04)}
+  .row .k{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);
+    min-width:104px;padding-top:3px;opacity:.9}
+  .row .v{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+  .row .v b{color:var(--ink);font-weight:600}
+
+  /* ---------- steps ---------- */
+  .steps{counter-reset:s;display:grid;gap:2px;margin-top:8px;border-radius:var(--r-l);overflow:hidden;
+    border:1px solid var(--line-soft)}
+  .step{counter-increment:s;display:flex;gap:18px;align-items:center;padding:18px 24px;
+    background:rgba(255,255,255,.024);transition:background .25s var(--ease)}
+  .step:hover{background:rgba(255,255,255,.05)}
+  .step::before{content:counter(s,decimal-leading-zero);font-size:12px;font-weight:700;color:var(--red);
+    font-variant-numeric:tabular-nums;letter-spacing:.06em;opacity:.85}
+  .step .t{font-size:15px;color:var(--ink-2)}
+  .step .t code{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:13.5px;
+    color:var(--ink);background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px;
+    border:1px solid var(--line-soft)}
+  .note{margin-top:18px;font-size:13.5px;color:var(--ink-3);line-height:1.6}
+
+  /* ---------- cta ---------- */
+  .cta{position:relative;text-align:center;padding:104px 0 110px;overflow:hidden}
+  .cta::before{content:"";position:absolute;left:50%;top:12%;width:min(760px,92vw);height:420px;transform:translateX(-50%);
+    background:radial-gradient(closest-side,rgba(255,50,55,.24),transparent 72%);filter:blur(10px);pointer-events:none}
+  .cta .icon-big{position:relative;width:96px;height:96px;margin:0 auto 30px;border-radius:21px;
+    box-shadow:0 30px 60px -24px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
+  .cta h2{max-width:16em;margin-left:auto;margin-right:auto}
+  .cta .sub{margin-left:auto;margin-right:auto;max-width:34em}
+  .cta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:34px}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line-soft);padding:38px 0 54px;background:rgba(0,0,0,.24)}
+  .foot{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+  .foot-links{display:flex;flex-wrap:wrap;gap:24px;font-size:13.5px;color:var(--ink-3)}
+  .foot-links a{transition:color .18s var(--ease)}
+  .foot-links a:hover{color:var(--ink)}
+  .foot-legal{font-size:13px;color:var(--ink-3)}
+
+  /* ---------- reveal ---------- */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:940px){
+    .hero{padding:64px 0 32px}
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    .shot{max-width:330px}
+    .cards{grid-template-columns:1fr 1fr}
+    .split{grid-template-columns:1fr;gap:40px}
+    .split.rev .split-media{order:0}
+    .zeros{grid-template-columns:1fr 1fr}
+    .stack{grid-template-columns:1fr}
+    .nav-links{display:none}
+  }
+  @media (max-width:620px){
+    .band{padding:72px 0}
+    .cards{grid-template-columns:1fr}
+    .checklist{grid-template-columns:1fr}
+    .zeros{grid-template-columns:1fr 1fr}
+    .zero b{font-size:38px}
+    .hero-cta .btn,.cta-row .btn{width:100%;justify-content:center}
+    .hero-cta,.cta-row{width:100%}
+    .step{align-items:flex-start}
+    .row{flex-direction:column;gap:8px}
+    .row .k{min-width:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;scroll-behavior:auto !important}
+    .rv{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-field"></div>
+<div class="grain"></div>
+
+<header id="hdr">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#top">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 26 22" fill="none">
+            <rect x="1.6" y="1.6" width="19" height="14" rx="4" stroke="#eb2e33" stroke-width="2.6"/>
+            <circle cx="19.4" cy="15.2" r="5.2" fill="#0b0d12"/>
+            <circle cx="19.4" cy="15.2" r="4" fill="#eb2e33"/>
+          </svg>
+        </span>
+        <span>Mac<em>Tape</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#control">Control</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#build">Build</a>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/svvayyy/MacTape" style="margin-left:auto" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Simple by design</div>
+          <h1>Record your Mac.<br><span class="fade">Keep the file.</span></h1>
+          <p class="lede">MacTape is a focused, open-source screen recorder that lives in your menu bar. Press record. Do the thing. Press stop. Get an ordinary MP4, saved on your Mac.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+              View the source
+            </a>
+            <a class="btn btn-ghost" href="#build">Build it yourself</a>
+          </div>
+          <div class="hero-meta">
+            <span><b>0.1.0</b> · preparing first public beta</span>
+            <span><b>macOS 15</b> or newer</span>
+            <span><b>MIT</b> licensed</span>
+          </div>
+        </div>
+
+        <div class="shot">
+          <div class="shot-frame">
+            <img src="assets/ui-idle.png" width="368" height="527" alt="The MacTape menu bar window: a display picked for capture, 1440p output, system audio and microphone toggles, a save folder, and Record and Shot buttons.">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-item">Local only <span></span></div>
+      <div class="ticker-item">Open source <span></span></div>
+      <div class="ticker-item">No account <span></span></div>
+      <div class="ticker-item">No telemetry <span></span></div>
+      <div class="ticker-item">Ordinary MP4 <span></span></div>
+      <div class="ticker-item">Menu bar native <span></span></div>
+      <div class="ticker-item">Local only <span></span></div>
+      <div class="ticker-item">Open source <span></span></div>
+      <div class="ticker-item">No account <span></span></div>
+      <div class="ticker-item">No telemetry <span></span></div>
+      <div class="ticker-item">Ordinary MP4 <span></span></div>
+      <div class="ticker-item">Menu bar native <span></span></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="band" id="features">
+    <div class="wrap">
+      <div class="band-head rv">
+        <div class="kicker">Everything it does</div>
+        <h2>A short feature list,<br>on purpose.</h2>
+        <p class="sub">No editor. No AI. No timeline, library, or project format to learn. MacTape does the handful of things a screen recorder actually needs to do, and does them where you already are — the menu bar.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <h3>Display or window</h3>
+          <p>Pick a whole display or one individual window. MacTape discovers what is available and captures exactly that.</p>
+        </div>
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg></div>
+          <h3>System audio</h3>
+          <p>Capture the sound coming out of your Mac alongside the picture, in the same file.</p>
+        </div>
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></div>
+          <h3>Optional microphone</h3>
+          <p>Add your voice when you want it. Microphone permission is only ever requested once you turn the microphone on.</p>
+        </div>
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16"/><path d="M6 8h12M6 16h12"/></svg></div>
+          <h3>Clean pause &amp; resume</h3>
+          <p>Pause, take a breath, resume. The paused gap never lands in the finished recording.</p>
+        </div>
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2Z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+          <h3>PNG screenshots</h3>
+          <p>The Shot button captures a still at the same output resolution you picked for video.</p>
+        </div>
+        <div class="card rv">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 14 2 2 4-5"/><path d="M21 12a9 9 0 1 1-9-9"/><path d="M15 3h6v6"/></svg></div>
+          <h3>Cancel without residue</h3>
+          <p>Change your mind mid-take and cancel. No orphaned temporary segments left behind on disk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOLUTION -->
+  <section class="band" style="padding-top:0">
+    <div class="wrap">
+      <div class="split">
+        <div class="rv">
+          <div class="kicker">Video and screenshots</div>
+          <h2>Choose your resolution.</h2>
+          <p class="sub">Keep the source pixels, or scale the output down to something more shareable. The same setting applies to recordings and to PNG screenshots.</p>
+          <div class="chips">
+            <div class="chip"><b>Original</b><i>Source size</i></div>
+            <div class="chip"><b>4K</b><i>Up to 3840&nbsp;×&nbsp;2160</i></div>
+            <div class="chip"><b>1440p</b><i>Up to 2560&nbsp;×&nbsp;1440</i></div>
+            <div class="chip"><b>1080p</b><i>Up to 1920&nbsp;×&nbsp;1080</i></div>
+            <div class="chip"><b>720p</b><i>Up to 1280&nbsp;×&nbsp;720</i></div>
+          </div>
+          <p class="note">Recordings finish as H.264 MP4 files in the save folder you choose. Nothing proprietary, nothing to export.</p>
+        </div>
+        <div class="split-media rv">
+          <img src="assets/ui-idle.png" width="368" height="527" alt="MacTape's capture section showing the Output row set to 1440p, up to 2560 by 1440.">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROL / PAUSE -->
+  <section class="band" id="control" style="padding-top:0">
+    <div class="wrap">
+      <div class="split rev">
+        <div class="rv">
+          <div class="kicker">Real control</div>
+          <h2>Pause. Resume.<br>No dead air.</h2>
+          <p class="sub">Most recorders make you choose between stopping cold and leaving a long silent gap in the middle of your take. MacTape stitches the recording back together so the paused time simply isn't there.</p>
+
+          <div class="tl" id="tl">
+            <div class="tl-row">
+              <div class="tl-label"><span>What you did</span><u>0:28 elapsed</u></div>
+              <div class="tl-bar">
+                <div class="seg seg-rec" style="flex-grow:1.2"></div>
+                <div class="seg seg-gap">Paused</div>
+                <div class="seg seg-rec" style="flex-grow:1.6"></div>
+              </div>
+            </div>
+            <div class="tl-row tl-out">
+              <div class="tl-label"><span>What lands in the MP4</span><u>0:22 recorded</u></div>
+              <div class="tl-bar">
+                <div class="seg seg-rec" style="flex-grow:1.2"></div>
+                <div class="seg seg-gap">Paused</div>
+                <div class="seg seg-rec" style="flex-grow:1.6"></div>
+              </div>
+            </div>
+            <p class="tl-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Illustrative timing — the paused stretch is removed, not silenced.
+            </p>
+          </div>
+
+          <p class="sub" style="font-size:15px;margin-top:28px">MacTape is always explicit about where it is. Every state is visible in the window before you commit to anything.</p>
+          <div class="states" id="states">
+            <div class="state"><i></i>Idle</div>
+            <div class="state"><i></i>Preparing</div>
+            <div class="state"><i></i>Recording</div>
+            <div class="state"><i></i>Paused</div>
+            <div class="state"><i></i>Stopping</div>
+            <div class="state"><i></i>Error</div>
+          </div>
+        </div>
+        <div class="split-media rv">
+          <img src="assets/ui-paused.png" width="368" height="397" alt="MacTape mid-recording in its paused state, showing a 00:02 timer, the capture target, and Resume, Stop, and Cancel Recording controls.">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="band" id="privacy">
+    <div class="wrap">
+      <div class="band-head rv">
+        <div class="kicker">Privacy</div>
+        <h2>Your recordings never leave your Mac.</h2>
+        <p class="sub">Not as a policy you have to trust — as a property of the software. Screen and audio content is written straight to the folder you picked, and that is the end of the story.</p>
+      </div>
+
+      <div class="zeros rv">
+        <div class="zero"><b>0</b><span>Accounts or sign-ins</span></div>
+        <div class="zero"><b>0</b><span>Analytics and telemetry</span></div>
+        <div class="zero"><b>0</b><span>Cloud services</span></div>
+        <div class="zero"><b>0</b><span>Ad or tracking SDKs</span></div>
+      </div>
+
+      <ul class="checklist rv">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Runs inside the macOS App Sandbox with a hardened runtime.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Screen Recording permission is requested when capture access is needed.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Microphone permission is requested only if you enable the microphone.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> No camera, contacts, location, calendar, photo library, or accessibility access.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Finished recordings are never uploaded, indexed, transcribed, or inspected.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Deleting MacTape does not delete recordings saved outside the app.</li>
+      </ul>
+
+      <div class="quote rv">
+        “The complete source is public so these claims can be inspected.”
+        <small>Read the full <a href="https://github.com/svvayyy/MacTape/blob/main/PRIVACY.md" style="color:#ff6b6f;text-decoration:underline;text-underline-offset:3px" rel="noopener">privacy statement</a>, then go read the code that implements it.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section class="band" style="padding-top:0">
+    <div class="wrap">
+      <div class="band-head rv">
+        <div class="kicker">Under the hood</div>
+        <h2>Native Swift, top to bottom.</h2>
+        <p class="sub">No Electron, no bundled web view, no cross-platform runtime. MacTape is built on the frameworks Apple ships for exactly this job, which is why it needs macOS 15 or newer.</p>
+      </div>
+      <div class="stack">
+        <div class="row rv"><div class="k">Interface</div><div class="v"><b>SwiftUI</b> menu bar app (<code style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px">LSUIElement</code>) — no Dock icon, no windows to manage.</div></div>
+        <div class="row rv"><div class="k">Capture</div><div class="v"><b>ScreenCaptureKit</b> for display and window discovery, video frames, and system audio.</div></div>
+        <div class="row rv"><div class="k">Media</div><div class="v"><b>H.264 in MP4</b>, written by ScreenCaptureKit's recording output and joined with AVFoundation.</div></div>
+        <div class="row rv"><div class="k">Language</div><div class="v"><b>Swift 6</b> with strict concurrency, plus Observation for state.</div></div>
+        <div class="row rv"><div class="k">Security</div><div class="v"><b>App Sandbox</b> and hardened runtime, with user-selected file access for your save folder.</div></div>
+        <div class="row rv"><div class="k">Output</div><div class="v"><b>MP4 and PNG</b> — files any Mac, phone, or browser already knows how to open.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILD -->
+  <section class="band" id="build" style="padding-top:0">
+    <div class="wrap">
+      <div class="band-head rv">
+        <div class="kicker">Get it running</div>
+        <h2>Clone it. Build it. Record.</h2>
+        <p class="sub">MacTape is preparing its first public beta, so today the way in is to build from source. It takes about a minute if you already have Xcode.</p>
+      </div>
+      <div class="steps rv">
+        <div class="step"><div class="t">Install <b style="color:var(--ink);font-weight:600">Xcode 26</b> or newer.</div></div>
+        <div class="step"><div class="t">Install <b style="color:var(--ink);font-weight:600">XcodeGen</b>.</div></div>
+        <div class="step"><div class="t">Run <code>xcodegen generate</code> in the repository root.</div></div>
+        <div class="step"><div class="t">Open <code>MacTape.xcodeproj</code>.</div></div>
+        <div class="step"><div class="t">Build and run the <code>MacTape</code> scheme.</div></div>
+      </div>
+      <p class="note">MacTape is a menu bar app, so nothing appears in the Dock. Click the record-circle in your menu bar to open it. macOS will ask for Screen Recording permission the first time capture access is needed.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="wrap">
+      <img class="icon-big rv" src="assets/icon-256.png" width="96" height="96" alt="MacTape app icon">
+      <div class="rv">
+        <h2>Press record.<br>Do the thing.<br>Press stop.</h2>
+        <p class="sub">That's the whole product. The file is already on your Mac.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            svvayyy/MacTape
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/svvayyy/MacTape/issues" rel="noopener">Report an issue</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="#top">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 26 22" fill="none">
+          <rect x="1.6" y="1.6" width="19" height="14" rx="4" stroke="#eb2e33" stroke-width="2.6"/>
+          <circle cx="19.4" cy="15.2" r="5.2" fill="#0b0d12"/>
+          <circle cx="19.4" cy="15.2" r="4" fill="#eb2e33"/>
+        </svg>
+      </span>
+      <span>Mac<em>Tape</em></span>
+    </a>
+    <div class="foot-links">
+      <a href="https://github.com/svvayyy/MacTape" rel="noopener">Source</a>
+      <a href="https://github.com/svvayyy/MacTape/blob/main/PRIVACY.md" rel="noopener">Privacy</a>
+      <a href="https://github.com/svvayyy/MacTape/blob/main/SECURITY.md" rel="noopener">Security</a>
+      <a href="https://github.com/svvayyy/MacTape/blob/main/CONTRIBUTING.md" rel="noopener">Contributing</a>
+      <a href="https://github.com/svvayyy/MacTape/issues" rel="noopener">Support</a>
+    </div>
+    <div class="foot-legal">MIT licensed · © 2026 MacTape contributors</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* sticky header border */
+  var hdr = document.getElementById('hdr');
+  var onScroll = function(){ hdr.classList.toggle('stuck', window.scrollY > 8); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  /* scroll reveal */
+  var items = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window) || reduce){
+    items.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:0.08});
+    items.forEach(function(el, i){
+      el.style.transitionDelay = (Math.min(i % 6, 5) * 55) + 'ms';
+      io.observe(el);
+    });
+  }
+
+  /* pointer glow on feature cards */
+  document.querySelectorAll('.card').forEach(function(card){
+    card.addEventListener('pointermove', function(ev){
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (ev.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+    });
+  });
+
+  /* pause-gap timeline: collapse the gap once it scrolls into view */
+  var tl = document.getElementById('tl');
+  if (tl){
+    if (reduce || !('IntersectionObserver' in window)){
+      tl.classList.add('run');
+    } else {
+      var tio = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting){ setTimeout(function(){ tl.classList.add('run'); }, 420); tio.unobserve(e.target); }
+        });
+      }, {threshold:0.45});
+      tio.observe(tl);
+    }
+  }
+
+  /* cycle the recording-state chips */
+  var chips = document.querySelectorAll('#states .state');
+  if (chips.length && !reduce){
+    var order = [0,1,2,3,2,4,0];
+    var idx = 0, timer = null;
+    var tick = function(){
+      chips.forEach(function(c){ c.classList.remove('on'); });
+      chips[order[idx % order.length]].classList.add('on');
+      idx++;
+    };
+    var sio = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting && !timer){ tick(); timer = setInterval(tick, 1400); }
+        else if (!e.isIntersecting && timer){ clearInterval(timer); timer = null; }
+      });
+    }, {threshold:0.3});
+    sio.observe(document.getElementById('states'));
+  }
+})();
+</script>
+</body>
+</html>
