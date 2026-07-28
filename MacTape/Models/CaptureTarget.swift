@@ -44,16 +44,4 @@ struct CaptureTarget: Identifiable {
         }
     }
 
-    var pixelSize: CGSize {
-        switch source {
-        case .display(let display):
-            return CGSize(width: display.width, height: display.height)
-        case .window(let window):
-            let scale = NSScreen.main?.backingScaleFactor ?? 2
-            return CGSize(
-                width: window.frame.width * scale,
-                height: window.frame.height * scale
-            )
-        }
-    }
 }

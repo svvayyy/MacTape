@@ -32,3 +32,23 @@ struct MacTapeRecordingButtonStyle: ButtonStyle {
         }
     }
 }
+
+struct MacTapeSecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .macTapeText(.button)
+            .foregroundStyle(MacTapeColor.textPrimary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+            .background(
+                MacTapeColor.surface.opacity(configuration.isPressed ? 0.7 : 1),
+                in: Capsule()
+            )
+            .overlay {
+                Capsule()
+                    .stroke(MacTapeColor.separator.opacity(0.7), lineWidth: 0.5)
+            }
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(MacTapeMotion.snappy, value: configuration.isPressed)
+    }
+}

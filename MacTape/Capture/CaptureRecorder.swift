@@ -16,9 +16,18 @@ final class CaptureRecorder: NSObject {
         excluding application: SCRunningApplication?,
         systemAudio: Bool,
         microphone: Bool,
+        resolution: CaptureResolution,
         outputURL: URL
     ) async throws {
-        let dimensions = CaptureDimensions.fittedPixelSize(for: target.pixelSize)
+        let contentFilter = target.contentFilter(excluding: application)
+        let sourceSize = CaptureDimensions.sourcePixelSize(
+            contentRect: contentFilter.contentRect,
+            pointPixelScale: CGFloat(contentFilter.pointPixelScale)
+        )
+        let dimensions = CaptureDimensions.fittedPixelSize(
+            for: sourceSize,
+            resolution: resolution
+        )
         let streamConfiguration = SCStreamConfiguration()
         streamConfiguration.width = Int(dimensions.width)
         streamConfiguration.height = Int(dimensions.height)
@@ -41,7 +50,7 @@ final class CaptureRecorder: NSObject {
             delegate: self
         )
         let stream = SCStream(
-            filter: target.contentFilter(excluding: application),
+            filter: contentFilter,
             configuration: streamConfiguration,
             delegate: self
         )
@@ -151,11 +160,23 @@ extension CaptureRecorder: SCStreamDelegate {
 
 enum MacTapeCaptureError: LocalizedError {
     case notRecording
+    case noRecordingSegments
+    case noVideoTrack
+    case finalizationFailed
+    case screenshotEncodingFailed
 
     var errorDescription: String? {
         switch self {
         case .notRecording:
             "There is no active recording to stop."
+        case .noRecordingSegments:
+            "The recording did not contain any completed segments."
+        case .noVideoTrack:
+            "A recording segment did not contain video."
+        case .finalizationFailed:
+            "MacTape could not create the final MP4."
+        case .screenshotEncodingFailed:
+            "MacTape could not create the screenshot."
         }
     }
 }

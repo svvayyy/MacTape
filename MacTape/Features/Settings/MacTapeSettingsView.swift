@@ -12,6 +12,19 @@ struct MacTapeSettingsView: View {
                     }
                 }
 
+                Picker(
+                    "Output resolution",
+                    selection: Binding(
+                        get: { appModel.outputResolution },
+                        set: { appModel.outputResolution = $0 }
+                    )
+                ) {
+                    ForEach(CaptureResolution.allCases) { resolution in
+                        Text(resolution.title)
+                            .tag(resolution)
+                    }
+                }
+
                 Toggle(
                     "Include system audio by default",
                     isOn: Binding(
@@ -39,6 +52,6 @@ struct MacTapeSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 460, height: 260)
+        .frame(width: 460, height: 300)
     }
 }

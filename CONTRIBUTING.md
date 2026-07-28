@@ -11,7 +11,6 @@ Open an issue before beginning a large feature or architectural change.
 - Preserve local-only operation.
 - Avoid new settings when a good default works.
 - Do not introduce analytics, telemetry, accounts, cloud features, AI features, or hidden network activity.
-- Do not add code comments or em dashes.
 - Do not commit captured media, personal paths, signing identities, credentials, or machine-specific files.
 
 ## Verification

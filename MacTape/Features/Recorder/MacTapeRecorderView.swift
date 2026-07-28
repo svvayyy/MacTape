@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MacTapeRecorderView: View {
     @Environment(MacTapeAppModel.self) private var appModel
+    @State private var isCancelConfirmationPresented = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -13,7 +14,7 @@ struct MacTapeRecorderView: View {
 
             Group {
                 switch appModel.recordingState {
-                case .recording:
+                case .recording, .pausing, .paused, .resuming:
                     recordingContent
                 case .stopping:
                     finishingContent
@@ -30,23 +31,43 @@ struct MacTapeRecorderView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             Task {
-                await appModel.refreshTargets()
+                await appModel.applicationDidBecomeActive()
             }
         }
     }
 
     private var header: some View {
         HStack {
-            Text("Mac*Tape*")
-                .macTapeText(.title)
+            HStack(spacing: MacTapeSpacing.small) {
+                MacTapeLogo()
+
+                Text("Mac*Tape*")
+                    .macTapeText(.title)
+            }
 
             Spacer()
 
-            MacTapeStatusPill(
-                title: appModel.statusTitle,
-                color: statusColor,
-                pulses: appModel.recordingState.isRecording
-            )
+            HStack(spacing: MacTapeSpacing.small) {
+                MacTapeStatusPill(
+                    title: appModel.statusTitle,
+                    color: statusColor,
+                    pulses: appModel.recordingState.isRecording
+                )
+
+                Button {
+                    quitMacTape()
+                } label: {
+                    Image(systemName: "power")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(MacTapeColor.textSecondary)
+                        .frame(width: 24, height: 24)
+                        .background(.quaternary.opacity(0.7), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .disabled(isSessionTransitioning)
+                .help(appModel.hasActiveRecordingSession ? "Finish and quit MacTape" : "Quit MacTape")
+                .accessibilityLabel("Quit MacTape")
+            }
         }
     }
 
@@ -71,7 +92,13 @@ struct MacTapeRecorderView: View {
                     .macTapeText(.section)
 
                 MacTapeSurface {
-                    MacTapeTargetPicker()
+                    VStack(spacing: MacTapeSpacing.medium) {
+                        MacTapeTargetPicker()
+
+                        Divider()
+
+                        MacTapeResolutionPicker()
+                    }
                 }
             }
 
@@ -84,7 +111,7 @@ struct MacTapeRecorderView: View {
                         MacTapeSourceToggle(
                             title: "System audio",
                             subtitle: "Sound from your Mac",
-                            symbolName: "speaker.wave.2.fill",
+                            systemImageName: "speaker.wave.2.fill",
                             isEnabled: appModel.isSystemAudioEnabled
                         ) {
                             appModel.isSystemAudioEnabled.toggle()
@@ -95,7 +122,7 @@ struct MacTapeRecorderView: View {
                         MacTapeSourceToggle(
                             title: "Microphone",
                             subtitle: "Your selected input",
-                            symbolName: "mic.fill",
+                            systemImageName: "mic.fill",
                             isEnabled: appModel.isMicrophoneEnabled
                         ) {
                             Task {
@@ -138,31 +165,56 @@ struct MacTapeRecorderView: View {
                 .accessibilityValue(appModel.saveDirectory.path)
             }
 
-            Button {
-                Task {
-                    await appModel.startRecording()
-                }
-            } label: {
-                HStack(spacing: MacTapeSpacing.small) {
-                    if appModel.recordingState == .preparing {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(.white)
-                    } else {
-                        Circle()
-                            .fill(.white)
-                            .frame(width: 9, height: 9)
+            HStack(spacing: MacTapeSpacing.small) {
+                Button {
+                    Task {
+                        await appModel.startRecording()
                     }
+                } label: {
+                    HStack(spacing: MacTapeSpacing.small) {
+                        if appModel.recordingState == .preparing {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(.white)
+                        } else {
+                            Circle()
+                                .fill(.white)
+                                .frame(width: 9, height: 9)
+                        }
 
-                    Text(appModel.recordingState == .preparing ? "Preparing" : "Record")
+                        Text(appModel.recordingState == .preparing ? "Preparing" : "Record")
+                    }
                 }
-            }
-            .buttonStyle(MacTapeRecordingButtonStyle(role: .record))
-            .disabled(!appModel.canStartRecording)
+                .buttonStyle(MacTapeRecordingButtonStyle(role: .record))
+                .disabled(!appModel.canStartRecording)
 
-            if let lastRecordingURL = appModel.lastRecordingURL {
-                Button("Reveal \(lastRecordingURL.lastPathComponent) in Finder") {
-                    appModel.revealLastRecording()
+                Button {
+                    Task {
+                        await appModel.takeScreenshot()
+                    }
+                } label: {
+                    HStack(spacing: MacTapeSpacing.small) {
+                        if appModel.isTakingScreenshot {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "camera.fill")
+                                .symbolRenderingMode(.hierarchical)
+                        }
+
+                        Text(appModel.isTakingScreenshot ? "Saving" : "Shot")
+                    }
+                }
+                .buttonStyle(MacTapeSecondaryButtonStyle())
+                .frame(width: 112)
+                .disabled(!appModel.canTakeScreenshot)
+                .help("Take a screenshot")
+                .accessibilityLabel("Take screenshot")
+            }
+
+            if let lastOutputURL = appModel.lastOutputURL {
+                Button("Reveal \(lastOutputURL.lastPathComponent) in Finder") {
+                    appModel.revealLastOutput()
                 }
                 .buttonStyle(.link)
                 .macTapeText(.detail)
@@ -173,15 +225,23 @@ struct MacTapeRecorderView: View {
 
     private var recordingContent: some View {
         VStack(spacing: MacTapeSpacing.xLarge) {
+            if let message = appModel.recordingErrorMessage {
+                recordingSessionError(message)
+            }
+
             VStack(spacing: MacTapeSpacing.medium) {
                 ZStack {
                     Circle()
                         .fill(MacTapeColor.recording.opacity(0.12))
                         .frame(width: 72, height: 72)
 
-                    Circle()
-                        .fill(MacTapeColor.recording)
-                        .frame(width: 24, height: 24)
+                    if appModel.recordingState.isPaused {
+                        Image(systemName: "pause.fill")
+                            .font(.system(size: 26, weight: .semibold))
+                            .foregroundStyle(MacTapeColor.recording)
+                    } else {
+                        MacTapeLogo(width: 36)
+                    }
                 }
                 .accessibilityHidden(true)
 
@@ -190,28 +250,118 @@ struct MacTapeRecorderView: View {
                     .contentTransition(.numericText())
                     .accessibilityLabel("Recording duration \(appModel.durationText)")
 
-                Text(appModel.selectedTarget?.title ?? "Recording")
+                Text(appModel.recordingTargetTitle)
                     .macTapeText(.detail)
                     .lineLimit(1)
+
+                if appModel.recordingState.isPaused {
+                    Text("Paused")
+                        .macTapeText(.section)
+                        .foregroundStyle(MacTapeColor.recording)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, MacTapeSpacing.large)
 
-            Button {
-                Task {
-                    await appModel.stopRecording()
-                }
-            } label: {
-                HStack(spacing: MacTapeSpacing.small) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(.white)
-                        .frame(width: 10, height: 10)
+            HStack(spacing: MacTapeSpacing.small) {
+                Button {
+                    Task {
+                        await appModel.togglePause()
+                    }
+                } label: {
+                    HStack(spacing: MacTapeSpacing.small) {
+                        if appModel.recordingState == .pausing
+                            || appModel.recordingState == .resuming {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(
+                                systemName: appModel.recordingState.isPaused
+                                    ? "play.fill"
+                                    : "pause.fill"
+                            )
+                        }
 
-                    Text("Stop Recording")
+                        Text(pauseButtonTitle)
+                    }
                 }
+                .buttonStyle(MacTapeSecondaryButtonStyle())
+                .disabled(
+                    appModel.recordingState == .pausing
+                        || appModel.recordingState == .resuming
+                )
+
+                Button {
+                    Task {
+                        await appModel.stopRecording()
+                    }
+                } label: {
+                    HStack(spacing: MacTapeSpacing.small) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(.white)
+                            .frame(width: 10, height: 10)
+
+                        Text("Stop")
+                    }
+                }
+                .buttonStyle(MacTapeRecordingButtonStyle(role: .stop))
+                .disabled(
+                    appModel.recordingState == .pausing
+                        || appModel.recordingState == .resuming
+                )
+                .keyboardShortcut(.escape, modifiers: [])
             }
-            .buttonStyle(MacTapeRecordingButtonStyle(role: .stop))
-            .keyboardShortcut(.escape, modifiers: [])
+
+            Button("Cancel Recording", role: .destructive) {
+                isCancelConfirmationPresented = true
+            }
+            .buttonStyle(.plain)
+            .macTapeText(.detail)
+            .foregroundStyle(MacTapeColor.recording)
+            .disabled(
+                appModel.recordingState == .pausing
+                    || appModel.recordingState == .resuming
+            )
+            .alert("Discard this recording?", isPresented: $isCancelConfirmationPresented) {
+                Button("Keep Recording", role: .cancel) {}
+                Button("Discard", role: .destructive) {
+                    Task {
+                        await appModel.cancelRecording()
+                    }
+                }
+            } message: {
+                Text("MacTape will delete every recorded segment.")
+            }
+        }
+    }
+
+    private var pauseButtonTitle: String {
+        switch appModel.recordingState {
+        case .pausing:
+            "Pausing"
+        case .paused:
+            "Resume"
+        case .resuming:
+            "Resuming"
+        default:
+            "Pause"
+        }
+    }
+
+    private func quitMacTape() {
+        Task {
+            if appModel.hasActiveRecordingSession {
+                await appModel.stopRecording()
+            }
+
+            guard
+                !appModel.hasActiveRecordingSession,
+                !appModel.recordingState.isBusy
+            else {
+                return
+            }
+
+            NSApplication.shared.terminate(nil)
         }
     }
 
@@ -234,22 +384,18 @@ struct MacTapeRecorderView: View {
 
     private var permissionOrLoadingView: some View {
         VStack(spacing: MacTapeSpacing.large) {
-            Image(systemName: appModel.isRefreshingTargets ? "display" : "rectangle.inset.filled.and.person.filled")
+            Image(systemName: permissionSymbolName)
                 .font(.system(size: 30, weight: .regular))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(MacTapeColor.textSecondary)
 
             VStack(spacing: MacTapeSpacing.small) {
-                Text(appModel.isRefreshingTargets ? "Finding screens and windows" : "Screen access is needed")
+                Text(permissionTitle)
                     .macTapeText(.body)
 
-                Text(
-                    appModel.isRefreshingTargets
-                        ? "MacTape is preparing your capture choices."
-                        : "MacTape only sees a screen or window while you choose to record it."
-                )
-                .macTapeText(.detail)
-                .multilineTextAlignment(.center)
+                Text(permissionDetail)
+                    .macTapeText(.detail)
+                    .multilineTextAlignment(.center)
             }
 
             if appModel.isRefreshingTargets {
@@ -258,20 +404,52 @@ struct MacTapeRecorderView: View {
             } else {
                 Button(appModel.screenPermissionGranted ? "Try Again" : "Allow Screen Access") {
                     Task {
-                        await appModel.refreshTargets(requestPermission: true)
+                        await appModel.refreshTargets(
+                            requestPermission: !appModel.screenPermissionGranted
+                        )
                     }
                 }
                 .buttonStyle(.borderedProminent)
 
-                Button("Open System Settings") {
-                    appModel.openPrivacySettings()
+                if !appModel.screenPermissionGranted {
+                    Button("Open System Settings") {
+                        appModel.openPrivacySettings()
+                    }
+                    .buttonStyle(.link)
+                    .macTapeText(.detail)
                 }
-                .buttonStyle(.link)
-                .macTapeText(.detail)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, MacTapeSpacing.xLarge)
+    }
+
+    private var permissionSymbolName: String {
+        if appModel.isRefreshingTargets || appModel.screenPermissionGranted {
+            "display"
+        } else {
+            "rectangle.inset.filled.and.person.filled"
+        }
+    }
+
+    private var permissionTitle: String {
+        if appModel.isRefreshingTargets {
+            "Finding screens and windows"
+        } else if appModel.screenPermissionGranted {
+            "Capture choices are unavailable"
+        } else {
+            "Screen access is needed"
+        }
+    }
+
+    private var permissionDetail: String {
+        if appModel.isRefreshingTargets {
+            "MacTape is preparing your capture choices."
+        } else if appModel.screenPermissionGranted {
+            "MacTape still has screen access. Try refreshing the available screens and windows."
+        } else {
+            "MacTape only sees a screen or window while you choose to record it."
+        }
     }
 
     private func errorView(_ message: String) -> some View {
@@ -302,16 +480,43 @@ struct MacTapeRecorderView: View {
         .background(MacTapeColor.warning.opacity(0.09), in: .rect(cornerRadius: MacTapeRadius.medium))
     }
 
+    private func recordingSessionError(_ message: String) -> some View {
+        HStack(alignment: .top, spacing: MacTapeSpacing.small) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(MacTapeColor.warning)
+
+            Text(message)
+                .macTapeText(.detail)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer()
+        }
+        .padding(MacTapeSpacing.medium)
+        .background(
+            MacTapeColor.warning.opacity(0.09),
+            in: .rect(cornerRadius: MacTapeRadius.medium)
+        )
+    }
+
     private var statusColor: Color {
         switch appModel.recordingState {
         case .idle:
             appModel.screenPermissionGranted ? MacTapeColor.success : MacTapeColor.warning
-        case .preparing, .stopping:
+        case .preparing, .pausing, .paused, .resuming, .stopping:
             MacTapeColor.warning
         case .recording:
             MacTapeColor.recording
         case .failed:
             MacTapeColor.warning
+        }
+    }
+
+    private var isSessionTransitioning: Bool {
+        switch appModel.recordingState {
+        case .preparing, .pausing, .resuming, .stopping:
+            true
+        default:
+            false
         }
     }
 }

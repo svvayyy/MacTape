@@ -10,6 +10,8 @@ final class MacTapeAppModel {
         static let systemAudio = "systemAudio"
         static let microphone = "microphone"
         static let saveDirectory = "saveDirectory"
+        static let saveDirectoryBookmark = "saveDirectoryBookmark"
+        static let outputResolution = "outputResolution"
     }
 
     var recordingState: RecordingState = .idle
@@ -25,11 +27,18 @@ final class MacTapeAppModel {
             preferences.set(isMicrophoneEnabled, forKey: PreferenceKey.microphone)
         }
     }
+    var outputResolution: CaptureResolution {
+        didSet {
+            preferences.set(outputResolution.rawValue, forKey: PreferenceKey.outputResolution)
+        }
+    }
     var saveDirectory: URL
     var elapsedTime: TimeInterval = 0
-    var lastRecordingURL: URL?
+    var lastOutputURL: URL?
     var isRefreshingTargets = false
+    var isTakingScreenshot = false
     var screenPermissionGranted: Bool
+    var recordingErrorMessage: String?
 
     private let preferences: UserDefaults
     private let screenAccessPreflight: () -> Bool
@@ -37,8 +46,18 @@ final class MacTapeAppModel {
     private let captureCatalogLoader: () async throws -> CaptureCatalog.Snapshot
     private var currentApplication: SCRunningApplication?
     private var recorder: CaptureRecorder?
+    private var recordingSession: RecordingSessionFiles?
+    private var hasPreparedCaptureTargets = false
+    private var isWaitingForScreenAccessChange = false
+    private var activeCaptureTarget: CaptureTarget?
+    private var activeApplication: SCRunningApplication?
+    private var activeSystemAudioEnabled = false
+    private var activeMicrophoneEnabled = false
+    private var activeResolution: CaptureResolution = .source
     private var recordingStartedAt: Date?
+    private var elapsedTimeAtRecordingStart: TimeInterval = 0
     private var durationTask: Task<Void, Never>?
+    private var saveDirectoryAccess: PersistentDirectoryAccess?
 
     init(
         preferences: UserDefaults = .standard,
@@ -62,9 +81,20 @@ final class MacTapeAppModel {
         }
 
         isMicrophoneEnabled = preferences.bool(forKey: PreferenceKey.microphone)
+        outputResolution = preferences
+            .string(forKey: PreferenceKey.outputResolution)
+            .flatMap(CaptureResolution.init(rawValue:)) ?? .source
 
-        if let storedPath = preferences.string(forKey: PreferenceKey.saveDirectory) {
-            saveDirectory = URL(fileURLWithPath: storedPath, isDirectory: true)
+        if
+            let bookmarkData = preferences.data(forKey: PreferenceKey.saveDirectoryBookmark),
+            let access = try? PersistentDirectoryAccess(bookmarkData: bookmarkData)
+        {
+            saveDirectoryAccess = access
+            saveDirectory = access.url
+            preferences.set(
+                access.bookmarkData,
+                forKey: PreferenceKey.saveDirectoryBookmark
+            )
         } else {
             let movies = fileManager.urls(for: .moviesDirectory, in: .userDomainMask).first
                 ?? fileManager.homeDirectoryForCurrentUser
@@ -84,6 +114,12 @@ final class MacTapeAppModel {
             "Preparing"
         case .recording:
             "Recording"
+        case .pausing:
+            "Pausing"
+        case .paused:
+            "Paused"
+        case .resuming:
+            "Resuming"
         case .stopping:
             "Finishing"
         case .failed:
@@ -96,10 +132,27 @@ final class MacTapeAppModel {
     }
 
     var canStartRecording: Bool {
-        selectedTarget != nil && recordingState == .idle
+        selectedTarget != nil && recordingState == .idle && !isTakingScreenshot
+    }
+
+    var canTakeScreenshot: Bool {
+        selectedTarget != nil && recordingState == .idle && !isTakingScreenshot
+    }
+
+    var hasActiveRecordingSession: Bool {
+        recordingSession != nil
+    }
+
+    var recordingTargetTitle: String {
+        activeCaptureTarget?.title ?? selectedTarget?.title ?? "Recording"
     }
 
     func prepare() async {
+        guard !hasPreparedCaptureTargets else {
+            return
+        }
+
+        hasPreparedCaptureTargets = true
         await refreshTargets()
     }
 
@@ -108,9 +161,20 @@ final class MacTapeAppModel {
             return
         }
 
-        let reportedPermission = requestPermission
-            ? screenAccessRequest()
-            : screenAccessPreflight()
+        let hadConfirmedAccess = screenPermissionGranted
+        let preflightGranted = screenAccessPreflight()
+        screenPermissionGranted = hadConfirmedAccess || preflightGranted
+
+        if requestPermission && !screenPermissionGranted {
+            isWaitingForScreenAccessChange = true
+            screenPermissionGranted = screenAccessRequest() || screenAccessPreflight()
+        }
+
+        guard screenPermissionGranted else {
+            captureTargets = []
+            currentApplication = nil
+            return
+        }
 
         isRefreshingTargets = true
 
@@ -123,6 +187,7 @@ final class MacTapeAppModel {
             captureTargets = snapshot.targets
             currentApplication = snapshot.currentApplication
             screenPermissionGranted = true
+            isWaitingForScreenAccessChange = false
 
             if selectedTarget == nil {
                 selectedTargetID = captureTargets.first?.id
@@ -132,16 +197,24 @@ final class MacTapeAppModel {
                 recordingState = .idle
             }
         } catch {
+            if hadConfirmedAccess && !requestPermission {
+                return
+            }
+
             captureTargets = []
             currentApplication = nil
-            screenPermissionGranted = reportedPermission
-
-            if reportedPermission {
-                recordingState = .failed(error.localizedDescription)
-            } else if case .failed = recordingState {
-                recordingState = .idle
-            }
+            screenPermissionGranted = hadConfirmedAccess || preflightGranted
+            recordingState = .failed(error.localizedDescription)
         }
+    }
+
+    func applicationDidBecomeActive() async {
+        guard isWaitingForScreenAccessChange, screenAccessPreflight() else {
+            return
+        }
+
+        screenPermissionGranted = true
+        await refreshTargets()
     }
 
     func setMicrophoneEnabled(_ enabled: Bool) async {
@@ -177,12 +250,24 @@ final class MacTapeAppModel {
             return
         }
 
-        saveDirectory = selectedURL
-        preferences.set(selectedURL.path, forKey: PreferenceKey.saveDirectory)
+        do {
+            let access = try PersistentDirectoryAccess(selectedURL: selectedURL)
+            saveDirectoryAccess = access
+            saveDirectory = access.url
+            preferences.set(access.url.path, forKey: PreferenceKey.saveDirectory)
+            preferences.set(
+                access.bookmarkData,
+                forKey: PreferenceKey.saveDirectoryBookmark
+            )
+        } catch {
+            recordingState = .failed(
+                "MacTape could not remember access to that folder. Choose another folder and try again."
+            )
+        }
     }
 
     func toggleRecording() async {
-        if recordingState.isRecording {
+        if hasActiveRecordingSession {
             await stopRecording()
         } else {
             await startRecording()
@@ -204,6 +289,13 @@ final class MacTapeAppModel {
 
         recordingState = .preparing
         elapsedTime = 0
+        recordingErrorMessage = nil
+        var pendingSession: RecordingSessionFiles?
+        activeCaptureTarget = selectedTarget
+        activeApplication = currentApplication
+        activeSystemAudioEnabled = isSystemAudioEnabled
+        activeMicrophoneEnabled = isMicrophoneEnabled
+        activeResolution = outputResolution
 
         do {
             try FileManager.default.createDirectory(
@@ -211,7 +303,9 @@ final class MacTapeAppModel {
                 withIntermediateDirectories: true
             )
 
-            let outputURL = RecordingFileNamer.availableURL(in: saveDirectory)
+            var session = try RecordingSessionFiles.create(in: saveDirectory)
+            pendingSession = session
+            let outputURL = session.nextSegmentURL()
             let recorder = CaptureRecorder()
             recorder.onFailure = { [weak self] error in
                 self?.handleCaptureFailure(error)
@@ -220,37 +314,183 @@ final class MacTapeAppModel {
 
             try await recorder.start(
                 target: selectedTarget,
-                excluding: currentApplication,
-                systemAudio: isSystemAudioEnabled,
-                microphone: isMicrophoneEnabled,
+                excluding: activeApplication,
+                systemAudio: activeSystemAudioEnabled,
+                microphone: activeMicrophoneEnabled,
+                resolution: activeResolution,
                 outputURL: outputURL
             )
 
+            session.appendSegment(outputURL)
+            recordingSession = session
+            pendingSession = nil
             recordingState = .recording
-            recordingStartedAt = Date()
             startDurationUpdates()
         } catch {
             recorder = nil
+            pendingSession?.discard()
+            recordingSession = nil
+            clearActiveConfiguration()
             recordingState = .failed(error.localizedDescription)
         }
     }
 
-    func stopRecording() async {
+    func togglePause() async {
+        switch recordingState {
+        case .recording:
+            await pauseRecording()
+        case .paused:
+            await resumeRecording()
+        default:
+            return
+        }
+    }
+
+    func pauseRecording() async {
         guard let recorder, recordingState == .recording else {
             return
         }
 
-        recordingState = .stopping
+        recordingState = .pausing
+        recordingErrorMessage = nil
         stopDurationUpdates()
 
         do {
-            let outputURL = try await recorder.stop()
+            _ = try await recorder.stop()
             self.recorder = nil
-            lastRecordingURL = outputURL
+            recordingState = .paused
+        } catch {
+            self.recorder = nil
+            removeFailedSegment()
+            recordingErrorMessage = error.localizedDescription
+            recordingState = .paused
+        }
+    }
+
+    func resumeRecording() async {
+        guard
+            let activeCaptureTarget,
+            var session = recordingSession,
+            recordingState == .paused
+        else {
+            return
+        }
+
+        recordingState = .resuming
+        recordingErrorMessage = nil
+        let outputURL = session.nextSegmentURL()
+        let recorder = CaptureRecorder()
+        recorder.onFailure = { [weak self] error in
+            self?.handleCaptureFailure(error)
+        }
+        self.recorder = recorder
+
+        do {
+            try await recorder.start(
+                target: activeCaptureTarget,
+                excluding: activeApplication,
+                systemAudio: activeSystemAudioEnabled,
+                microphone: activeMicrophoneEnabled,
+                resolution: activeResolution,
+                outputURL: outputURL
+            )
+
+            session.appendSegment(outputURL)
+            recordingSession = session
+            recordingState = .recording
+            startDurationUpdates()
+        } catch {
+            self.recorder = nil
+            try? FileManager.default.removeItem(at: outputURL)
+            recordingErrorMessage = error.localizedDescription
+            recordingState = .paused
+        }
+    }
+
+    func stopRecording() async {
+        guard
+            let session = recordingSession,
+            recordingState == .recording || recordingState == .paused
+        else {
+            return
+        }
+
+        recordingState = .stopping
+        recordingErrorMessage = nil
+
+        if recorder != nil {
+            stopDurationUpdates()
+        }
+
+        do {
+            if let recorder {
+                _ = try await recorder.stop()
+            }
+
+            self.recorder = nil
+            let outputURL = try await RecordingSegmentFinalizer.finalize(session)
+            recordingSession = nil
+            clearActiveConfiguration()
+            lastOutputURL = outputURL
             recordingState = .idle
             NSWorkspace.shared.activateFileViewerSelecting([outputURL])
         } catch {
             self.recorder = nil
+            recordingErrorMessage = error.localizedDescription
+            recordingState = .paused
+        }
+    }
+
+    func cancelRecording() async {
+        guard let session = recordingSession else {
+            return
+        }
+
+        recordingState = .stopping
+        recordingErrorMessage = nil
+
+        if recorder != nil {
+            stopDurationUpdates()
+        }
+
+        if let recorder {
+            _ = try? await recorder.stop()
+        }
+
+        self.recorder = nil
+        session.discard()
+        recordingSession = nil
+        clearActiveConfiguration()
+        elapsedTime = 0
+        recordingState = .idle
+    }
+
+    func takeScreenshot() async {
+        guard let selectedTarget, canTakeScreenshot else {
+            return
+        }
+
+        isTakingScreenshot = true
+
+        defer {
+            isTakingScreenshot = false
+        }
+
+        do {
+            try FileManager.default.createDirectory(
+                at: saveDirectory,
+                withIntermediateDirectories: true
+            )
+            let outputURL = ScreenshotFileNamer.availableURL(in: saveDirectory)
+            try await CaptureScreenshot.save(
+                target: selectedTarget,
+                excluding: currentApplication,
+                resolution: outputResolution,
+                outputURL: outputURL
+            )
+            lastOutputURL = outputURL
+            NSWorkspace.shared.activateFileViewerSelecting([outputURL])
+        } catch {
             recordingState = .failed(error.localizedDescription)
         }
     }
@@ -261,12 +501,12 @@ final class MacTapeAppModel {
         }
     }
 
-    func revealLastRecording() {
-        guard let lastRecordingURL else {
+    func revealLastOutput() {
+        guard let lastOutputURL else {
             return
         }
 
-        NSWorkspace.shared.activateFileViewerSelecting([lastRecordingURL])
+        NSWorkspace.shared.activateFileViewerSelecting([lastOutputURL])
     }
 
     func openPrivacySettings() {
@@ -276,11 +516,14 @@ final class MacTapeAppModel {
             return
         }
 
+        isWaitingForScreenAccessChange = true
         NSWorkspace.shared.open(url)
     }
 
     private func startDurationUpdates() {
         durationTask?.cancel()
+        recordingStartedAt = Date()
+        elapsedTimeAtRecordingStart = elapsedTime
         durationTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .milliseconds(200))
@@ -289,7 +532,8 @@ final class MacTapeAppModel {
                     return
                 }
 
-                self.elapsedTime = Date().timeIntervalSince(recordingStartedAt)
+                self.elapsedTime = self.elapsedTimeAtRecordingStart
+                    + Date().timeIntervalSince(recordingStartedAt)
             }
         }
     }
@@ -299,7 +543,8 @@ final class MacTapeAppModel {
         durationTask = nil
 
         if let recordingStartedAt {
-            elapsedTime = Date().timeIntervalSince(recordingStartedAt)
+            elapsedTime = elapsedTimeAtRecordingStart
+                + Date().timeIntervalSince(recordingStartedAt)
         }
 
         recordingStartedAt = nil
@@ -308,6 +553,30 @@ final class MacTapeAppModel {
     private func handleCaptureFailure(_ error: Error) {
         stopDurationUpdates()
         recorder = nil
-        recordingState = .failed(error.localizedDescription)
+        removeFailedSegment()
+
+        if recordingSession != nil {
+            recordingErrorMessage = error.localizedDescription
+            recordingState = .paused
+        } else {
+            recordingState = .failed(error.localizedDescription)
+        }
+    }
+
+    private func removeFailedSegment() {
+        guard var session = recordingSession else {
+            return
+        }
+
+        session.removeLastSegment()
+        recordingSession = session
+    }
+
+    private func clearActiveConfiguration() {
+        activeCaptureTarget = nil
+        activeApplication = nil
+        activeSystemAudioEnabled = false
+        activeMicrophoneEnabled = false
+        activeResolution = .source
     }
 }

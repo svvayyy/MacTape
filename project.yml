@@ -15,6 +15,9 @@ targets:
   MacTape:
     type: application
     platform: macOS
+    configFiles:
+      Debug: MacTape/Resources/Signing.xcconfig
+      Release: MacTape/Resources/Signing.xcconfig
     sources:
       - path: MacTape
     settings:
@@ -24,7 +27,9 @@ targets:
         INFOPLIST_FILE: MacTape/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: NO
         CODE_SIGN_ENTITLEMENTS: MacTape/Resources/MacTape.entitlements
-        ENABLE_APP_SANDBOX: NO
+        ENABLE_APP_SANDBOX: YES
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: 1
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
     scheme:
       testTargets:
@@ -32,6 +37,9 @@ targets:
   MacTapeTests:
     type: bundle.unit-test
     platform: macOS
+    configFiles:
+      Debug: MacTape/Resources/Signing.xcconfig
+      Release: MacTape/Resources/Signing.xcconfig
     sources:
       - path: MacTapeTests
     dependencies:
@@ -40,4 +48,3 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.mactape.recorder.tests
         GENERATE_INFOPLIST_FILE: YES
-        CODE_SIGNING_ALLOWED: NO

@@ -9,7 +9,11 @@ struct MacTapeApp: App {
             MacTapeRecorderView()
                 .environment(appModel)
         } label: {
-            Image(systemName: appModel.recordingState.isRecording ? "record.circle.fill" : "record.circle")
+            Image(
+                systemName: appModel.hasActiveRecordingSession
+                    ? "record.circle.fill"
+                    : "record.circle"
+            )
                 .symbolRenderingMode(.hierarchical)
         }
         .menuBarExtraStyle(.window)
