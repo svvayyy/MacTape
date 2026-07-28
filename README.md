@@ -4,7 +4,7 @@ MacTape is a focused, open-source screen recorder for macOS.
 
 Press record. Do the thing. Press stop. Get the file.
 
-Website: <https://svvayyy.github.io/MacTape/> (source in [`docs/`](docs))
+Website: <https://mactape.cc/> (source in [`docs/`](docs))
 
 ## Product
 
