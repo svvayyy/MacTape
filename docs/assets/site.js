@@ -23,11 +23,6 @@ document.documentElement.classList.add("js");
       chrome.classList.remove("open");
       var trigger = chrome.querySelector(".menu-btn");
       if (trigger) trigger.setAttribute("aria-expanded", "false");
-      chrome.querySelectorAll(".m-row").forEach(function (row) {
-        row.setAttribute("data-open", "false");
-        var rowTrigger = row.querySelector(".m-trigger");
-        if (rowTrigger) rowTrigger.setAttribute("aria-expanded", "false");
-      });
     };
 
     var menuBtn = chrome.querySelector(".menu-btn");
@@ -43,21 +38,6 @@ document.documentElement.classList.add("js");
         if (!next) closeMobile();
       });
     }
-
-    /* One mobile row open at a time, matching the desktop dropdowns. */
-    chrome.querySelectorAll(".m-row .m-trigger").forEach(function (trigger) {
-      trigger.addEventListener("click", function () {
-        var row = trigger.closest(".m-row");
-        var wasOpen = row.getAttribute("data-open") === "true";
-        chrome.querySelectorAll(".m-row").forEach(function (other) {
-          other.setAttribute("data-open", "false");
-          var otherTrigger = other.querySelector(".m-trigger");
-          if (otherTrigger) otherTrigger.setAttribute("aria-expanded", "false");
-        });
-        row.setAttribute("data-open", wasOpen ? "false" : "true");
-        trigger.setAttribute("aria-expanded", String(!wasOpen));
-      });
-    });
 
     chrome.querySelectorAll(".chrome-mobile a").forEach(function (link) {
       link.addEventListener("click", closeMobile);

@@ -71,7 +71,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   box-shadow:0 10px 26px rgba(0,0,0,.42);opacity:0;
   transition:opacity .42s var(--ease),height .32s var(--ease)}
 .chrome.stuck .chrome-surface,.chrome.open .chrome-surface{opacity:1}
-.chrome.open .chrome-surface{height:15.5rem}
+.chrome.open .chrome-surface{height:12.25rem}
 
 .chrome-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;
   padding:4px;transition:padding .42s var(--ease)}
@@ -131,26 +131,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .chrome.open .menu-btn span::before{transform:translateY(6px) rotate(45deg)}
 .chrome.open .menu-btn span::after{transform:translateY(-6px) rotate(-45deg)}
 
-/* mobile menu body */
-.chrome-mobile{position:absolute;top:56px;right:8px;z-index:5;display:none;flex-direction:column;
-  align-items:flex-end;gap:6px;opacity:0;visibility:hidden;transform:translateY(-10px);pointer-events:none;
+/* Compact mobile menu body */
+.chrome-mobile{position:absolute;top:58px;inset-inline:10px;z-index:5;display:none;
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;opacity:0;visibility:hidden;
+  transform:translateY(-8px);pointer-events:none;
   transition:opacity .3s var(--ease),transform .3s var(--ease),visibility 0s linear .3s}
 .chrome.open .chrome-mobile{opacity:1;visibility:visible;transform:none;pointer-events:auto;
   transition-delay:0s}
-.m-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;height:36px;overflow:hidden}
-.m-links{display:flex;align-items:center;gap:2px;max-width:0;opacity:0;overflow:hidden;
-  visibility:hidden;transition:max-width .3s var(--ease),opacity .24s var(--ease),visibility 0s linear .3s}
-.m-row[data-open="true"] .m-links{max-width:min(66vw,22rem);opacity:1;visibility:visible;
-  transition-delay:0s}
-.m-links a{padding:4px 10px;font-size:14px;font-weight:500;white-space:nowrap;
-  transition:opacity .2s var(--ease)}
-.m-links a:hover{opacity:.6}
-.m-trigger{display:inline-flex;align-items:center;justify-content:flex-end;gap:12px;height:36px;padding:0 14px;
-  font-size:14px;font-weight:500;transition:opacity .2s var(--ease)}
-.m-trigger:hover{opacity:.6}
-.m-trigger svg{width:14px;height:14px;transition:transform .2s var(--ease)}
-.m-row[data-open="true"] .m-trigger svg{transform:rotate(180deg)}
-.chrome-mobile .star-pill{margin-top:4px}
+.chrome-mobile a{display:flex;align-items:center;min-width:0;height:36px;padding:0 12px;
+  border-radius:var(--r-s);background:rgba(255,255,255,.045);font-size:14px;font-weight:550;
+  color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:background .18s var(--ease),color .18s var(--ease)}
+.chrome-mobile a:hover,.chrome-mobile a:focus-visible{background:rgba(255,255,255,.09)}
+.chrome-mobile a[aria-current="page"]{color:#ff6b6f}
 .chrome-scrim{position:fixed;inset:0;z-index:0;display:none;background:transparent;pointer-events:auto}
 .chrome.open .chrome-scrim{display:block}
 
@@ -372,7 +365,7 @@ footer{padding:56px 0 54px;background:rgba(0,0,0,.3)}
 @media (max-width:940px){
   .chrome-nav{display:none}
   .menu-btn{display:inline-flex}
-  .chrome-mobile{display:flex}
+  .chrome-mobile{display:grid}
   .hero{padding:110px 0 32px}
   .hero-grid{grid-template-columns:1fr;gap:48px}
   .shot{max-width:330px}
