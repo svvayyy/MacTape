@@ -6,6 +6,14 @@ Press record. Do the thing. Press stop. Get the file.
 
 Website: <https://mactape.cc/> (source in [`docs/`](docs))
 
+## Download
+
+Download the signed and Apple-notarized public beta:
+
+[Download MacTape 0.1.0 for macOS](https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg)
+
+Open the disk image, drag MacTape into Applications, then launch it from there. MacTape requires macOS 15 or newer.
+
 ## Product
 
 MacTape records a display or window with optional system audio and microphone input. It also captures screenshots. Recordings stay on the Mac and finish as ordinary MP4 files.
@@ -28,7 +36,7 @@ MacTape requires macOS 15 or newer because it uses modern ScreenCaptureKit recor
 
 ## Current status
 
-MacTape is preparing for its first public beta. The current build includes:
+MacTape 0.1.0 is available as a public beta. The current build includes:
 
 - Native SwiftUI menu bar operation
 - Display and window discovery

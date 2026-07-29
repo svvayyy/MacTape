@@ -53,6 +53,7 @@
           </button>
           <div class="dd-menu" role="menu">
             <div class="dd-card">
+              <a href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">Download</a>
               <a href="#features">Features</a>
               <a href="#control">Control</a>
               <a href="#stack">Under the hood</a>
@@ -105,12 +106,12 @@
       </div>
 
       <nav class="chrome-mobile" aria-label="Mobile navigation">
+        <a href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">Download</a>
         <a href="#features">Features</a>
         <a href="#control">Controls</a>
         <a href="#stack">How it works</a>
-        <a href="#build">Build MacTape</a>
+        <a href="#build">Install</a>
         <a href="privacy.html">Privacy</a>
-        <a href="https://github.com/svvayyy/MacTape/issues" rel="noopener">Support</a>
       </nav>
 
     </header>
@@ -127,15 +128,16 @@
           <h1>Record your Mac.<br><span class="fade">Keep the file.</span></h1>
           <p class="lede">MacTape is a focused, open-source screen recorder that lives in your menu bar. Press record. Do the thing. Press stop. Get an ordinary MP4, saved on your Mac.</p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape" rel="noopener">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-              View the source
+            <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1v9m0 0 3-3m-3 3L5 7M2 13h12"/></svg>
+              Download for macOS
             </a>
-            <a class="btn btn-ghost" href="#build">Build it yourself</a>
+            <a class="btn btn-ghost" href="https://github.com/svvayyy/MacTape" rel="noopener">View the source</a>
           </div>
           <div class="hero-meta">
-            <span><b>0.1.0</b> · preparing first public beta</span>
+            <span><b>0.1.0</b> public beta</span>
             <span><b>macOS 15</b> or newer</span>
+            <span><b>Apple notarized</b></span>
             <span><b>MIT</b> licensed</span>
           </div>
         </div>
@@ -348,18 +350,16 @@
     <div class="wrap">
       <div class="band-head rv">
         <div class="kicker">Get it running</div>
-        <h2>Clone it. Build it. Record.</h2>
-        <p class="sub">MacTape is preparing its first public beta, so today the way in is to build from source.</p>
+        <h2>Download. Drag. Record.</h2>
+        <p class="sub">The public beta is a signed and Apple-notarized disk image. No Xcode or developer tools required.</p>
       </div>
       <div class="steps rv">
-        <div class="step"><div class="t">Clone or download the <a href="https://github.com/svvayyy/MacTape" rel="noopener">MacTape repository</a>.</div></div>
-        <div class="step"><div class="t">Install <b>Xcode 26</b> or newer.</div></div>
-        <div class="step"><div class="t">Install <b>XcodeGen</b>.</div></div>
-        <div class="step"><div class="t">Run <code>xcodegen generate</code> in the repository root.</div></div>
-        <div class="step"><div class="t">Open <code>MacTape.xcodeproj</code>.</div></div>
-        <div class="step"><div class="t">Build and run the <code>MacTape</code> scheme.</div></div>
+        <div class="step"><div class="t"><a href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">Download the MacTape DMG</a>.</div></div>
+        <div class="step"><div class="t">Open the disk image and drag <b>MacTape</b> into <b>Applications</b>.</div></div>
+        <div class="step"><div class="t">Open MacTape from Applications.</div></div>
+        <div class="step"><div class="t">Click the record-circle in your menu bar.</div></div>
       </div>
-      <p class="note">MacTape is a menu bar app, so nothing appears in the Dock. Click the record-circle in your menu bar to open it. macOS will ask for Screen Recording permission the first time capture access is needed.</p>
+      <p class="note">MacTape is a menu bar app, so nothing appears in the Dock. macOS will ask for Screen Recording permission the first time capture access is needed. Developers can also <a href="https://github.com/svvayyy/MacTape#build" rel="noopener">build MacTape from source</a>.</p>
     </div>
   </section>
 
@@ -371,11 +371,11 @@
         <h2>Press record.<br>Do the thing.<br>Press stop.</h2>
         <p class="sub">That's the whole product. The file is already on your Mac.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-            svvayyy/MacTape
+          <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1v9m0 0 3-3m-3 3L5 7M2 13h12"/></svg>
+            Download MacTape
           </a>
-          <a class="btn btn-ghost" href="https://github.com/svvayyy/MacTape/issues" rel="noopener">Report an issue</a>
+          <a class="btn btn-ghost" href="https://github.com/svvayyy/MacTape" rel="noopener">View source</a>
         </div>
       </div>
     </div>
