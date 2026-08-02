@@ -1,10 +1,15 @@
 # MacTape
 
-MacTape is a focused, open-source screen recorder for macOS.
+MacTape is a free, native, open-source screen recorder for macOS with system audio, optional microphone capture, and local MP4 output.
 
 Press record. Do the thing. Press stop. Get the file.
 
 Website: <https://mactape.cc/> (source in [`docs/`](docs))
+
+Guides:
+
+- [How to record your Mac screen with system audio](https://mactape.cc/record-mac-screen-with-system-audio.html)
+- [Open-source macOS screen recorders compared](https://mactape.cc/open-source-macos-screen-recorders.html)
 
 ## Download
 

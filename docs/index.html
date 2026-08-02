@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MacTape · Record your Mac. Keep the file.</title>
-<meta name="description" content="MacTape is a focused, open-source screen recorder for macOS. Record a display or window with system audio and microphone, pause cleanly, and get an ordinary MP4 saved on your Mac.">
+<title>MacTape — Free, Open-Source Screen Recorder for macOS</title>
+<meta name="description" content="MacTape is a free, open-source screen recorder for macOS. Capture a display or window with system audio and microphone, then keep a local MP4.">
 <meta name="theme-color" content="#0b0d12">
 <meta name="google-site-verification" content="wOvxlQoMo4nfVzHSDWtysTxTVVoxUggC68DK9niwi4Q">
 <link rel="canonical" href="https://mactape.cc/">
@@ -13,14 +13,85 @@
 <link rel="apple-touch-icon" href="assets/icon-256.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MacTape">
-<meta property="og:title" content="MacTape · Record your Mac. Keep the file.">
+<meta property="og:title" content="MacTape — Free, Open-Source Screen Recorder for macOS">
 <meta property="og:description" content="A focused, open-source screen recorder that lives in your macOS menu bar and saves ordinary MP4 files. Local only. No account.">
 <meta property="og:url" content="https://mactape.cc/">
 <meta property="og:image" content="https://mactape.cc/assets/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MacTape · Record your Mac. Keep the file.">
+<meta name="twitter:title" content="MacTape — Free, Open-Source Screen Recorder for macOS">
 <meta name="twitter:description" content="A focused, open-source screen recorder for macOS. Local only. No account.">
 <meta name="twitter:image" content="https://mactape.cc/assets/og-image.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "MacTape",
+  "description": "A free, native, open-source screen recorder for macOS with system audio, optional microphone capture, screenshots, and local MP4 output.",
+  "url": "https://mactape.cc/",
+  "sameAs": "https://github.com/svvayyy/MacTape",
+  "downloadUrl": "https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "macOS 15 or newer",
+  "softwareVersion": "0.1.0",
+  "softwareRequirements": "macOS 15 or newer",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg"
+  },
+  "license": "https://opensource.org/license/mit",
+  "image": "https://mactape.cc/assets/icon-1024.png",
+  "screenshot": "https://mactape.cc/assets/ui-idle.png",
+  "author": {
+    "@type": "Organization",
+    "name": "MacTape contributors",
+    "url": "https://github.com/svvayyy/MacTape/graphs/contributors"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is MacTape free and open source?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. MacTape is free to download, its complete source code is public, and it is released under the MIT License."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can MacTape record system audio on a Mac?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. MacTape can record the sound playing on your Mac together with a display or window, and microphone capture is optional."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does MacTape upload recordings or add a watermark?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. MacTape saves ordinary MP4 files directly to the folder you choose. It has no cloud service, account, telemetry, or watermark."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which versions of macOS does MacTape support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MacTape 0.1.0 requires macOS 15 or newer."
+      }
+    }
+  ]
+}
+</script>
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -57,6 +128,7 @@
               <a href="#features">Features</a>
               <a href="#control">Control</a>
               <a href="#stack">Under the hood</a>
+              <a href="#guides">Guides</a>
             </div>
           </div>
         </div>
@@ -110,6 +182,7 @@
         <a href="#features">Features</a>
         <a href="#control">Controls</a>
         <a href="#stack">How it works</a>
+        <a href="#guides">Guides</a>
         <a href="#build">Install</a>
         <a href="privacy.html">Privacy</a>
       </nav>
@@ -125,8 +198,8 @@
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <h1>Record your Mac.<br><span class="fade">Keep the file.</span></h1>
-          <p class="lede">MacTape is a focused, open-source screen recorder that lives in your menu bar. Press record. Do the thing. Press stop. Get an ordinary MP4, saved on your Mac.</p>
+          <h1>A native, open-source screen recorder for macOS.</h1>
+          <p class="lede"><strong>Record your Mac. Keep the file.</strong> MacTape lives in your menu bar, captures system audio, and saves an ordinary MP4 directly to the folder you choose.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="https://github.com/svvayyy/MacTape/releases/download/v0.1.0-beta.1/MacTape-0.1.0.dmg" rel="noopener">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1v9m0 0 3-3m-3 3L5 7M2 13h12"/></svg>
@@ -363,6 +436,59 @@
     </div>
   </section>
 
+  <!-- GUIDES -->
+  <section class="band" id="guides">
+    <div class="wrap">
+      <div class="band-head rv">
+        <div class="kicker">Practical guides</div>
+        <h2>Record what you need.<br>Understand the tradeoffs.</h2>
+        <p class="sub">Straight answers about Mac screen recording, system audio, privacy, and open-source tools.</p>
+      </div>
+      <div class="guide-cards">
+        <a class="guide-card rv" href="record-mac-screen-with-system-audio.html">
+          <span class="guide-type">Step-by-step</span>
+          <h3>How to record your Mac screen with system audio</h3>
+          <p>Capture a display or window, the sound playing on your Mac, and an optional microphone—without an audio-routing workaround.</p>
+          <span class="guide-link">Read the guide <span aria-hidden="true">→</span></span>
+        </a>
+        <a class="guide-card rv" href="open-source-macos-screen-recorders.html">
+          <span class="guide-type">Honest comparison</span>
+          <h3>Open-source screen recorders for macOS</h3>
+          <p>MacTape, QuickRecorder, OBS Studio, and Kap solve different recording jobs. Compare their approaches before installing one.</p>
+          <span class="guide-link">Compare the tools <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="band band-joined" id="faq">
+    <div class="wrap faq-wrap">
+      <div class="band-head rv">
+        <div class="kicker">Common questions</div>
+        <h2>Before you press record.</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item rv">
+          <summary>Is MacTape free and open source?</summary>
+          <p>Yes. MacTape is free to download, its complete source code is public, and it is released under the <a href="https://github.com/svvayyy/MacTape/blob/main/LICENSE" rel="noopener">MIT License</a>.</p>
+        </details>
+        <details class="faq-item rv">
+          <summary>Can MacTape record system audio on a Mac?</summary>
+          <p>Yes. MacTape can record the sound playing on your Mac together with a display or window. Microphone capture is optional and controlled separately.</p>
+        </details>
+        <details class="faq-item rv">
+          <summary>Does MacTape upload recordings or add a watermark?</summary>
+          <p>No. MacTape saves ordinary MP4 files directly to the folder you choose. It has no cloud service, account, telemetry, or watermark.</p>
+        </details>
+        <details class="faq-item rv">
+          <summary>Which versions of macOS does MacTape support?</summary>
+          <p>MacTape 0.1.0 requires macOS 15 or newer because it uses Apple’s modern ScreenCaptureKit recording APIs.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta">
     <div class="wrap">
@@ -398,6 +524,7 @@
     <div class="foot-links">
       <a href="https://github.com/svvayyy/MacTape" rel="noopener">Source</a>
       <a href="privacy.html">Privacy</a>
+      <a href="#guides">Guides</a>
       <a href="https://github.com/svvayyy/MacTape/blob/main/SECURITY.md" rel="noopener">Security</a>
       <a href="https://github.com/svvayyy/MacTape/blob/main/CONTRIBUTING.md" rel="noopener">Contributing</a>
       <a href="https://github.com/svvayyy/MacTape/issues" rel="noopener">Support</a>
