@@ -1,4 +1,4 @@
-# Contributing to MacTape
+# Contributing to ClipTape
 
 Thank you for helping make recording simpler.
 
@@ -15,6 +15,6 @@ Open an issue before beginning a large feature or architectural change.
 
 ## Verification
 
-Run the MacTape test target and build the MacTape scheme before opening a pull request.
+Run the ClipTape test target and build the ClipTape scheme before opening a pull request.
 
-Explain what changed, why it belongs in MacTape, and how it was verified.
+Explain what changed, why it belongs in ClipTape, and how it was verified.

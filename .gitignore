@@ -6,4 +6,4 @@ build/
 *.xccheckout
 *.moved-aside
 xcuserdata/
-/MacTape/Resources/LocalSigning.xcconfig
+/ClipTape/Resources/LocalSigning.xcconfig

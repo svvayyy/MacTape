@@ -1,4 +1,4 @@
-name: MacTape
+name: ClipTape
 options:
   bundleIdPrefix: app.mactape
   createIntermediateGroups: true
@@ -12,38 +12,38 @@ settings:
     ENABLE_HARDENED_RUNTIME: YES
     ENABLE_USER_SCRIPT_SANDBOXING: YES
 targets:
-  MacTape:
+  ClipTape:
     type: application
     platform: macOS
     configFiles:
-      Debug: MacTape/Resources/Signing.xcconfig
-      Release: MacTape/Resources/Signing.xcconfig
+      Debug: ClipTape/Resources/Signing.xcconfig
+      Release: ClipTape/Resources/Signing.xcconfig
     sources:
-      - path: MacTape
+      - path: ClipTape
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.mactape.recorder
-        PRODUCT_NAME: MacTape
-        INFOPLIST_FILE: MacTape/Resources/Info.plist
+        PRODUCT_NAME: ClipTape
+        INFOPLIST_FILE: ClipTape/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: NO
-        CODE_SIGN_ENTITLEMENTS: MacTape/Resources/MacTape.entitlements
+        CODE_SIGN_ENTITLEMENTS: ClipTape/Resources/ClipTape.entitlements
         ENABLE_APP_SANDBOX: YES
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: 2
+        CURRENT_PROJECT_VERSION: 3
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
     scheme:
       testTargets:
-        - MacTapeTests
-  MacTapeTests:
+        - ClipTapeTests
+  ClipTapeTests:
     type: bundle.unit-test
     platform: macOS
     configFiles:
-      Debug: MacTape/Resources/Signing.xcconfig
-      Release: MacTape/Resources/Signing.xcconfig
+      Debug: ClipTape/Resources/Signing.xcconfig
+      Release: ClipTape/Resources/Signing.xcconfig
     sources:
-      - path: MacTapeTests
+      - path: ClipTapeTests
     dependencies:
-      - target: MacTape
+      - target: ClipTape
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.mactape.recorder.tests

@@ -1,4 +1,4 @@
-/* MacTape site behaviour. Shared by index.html and privacy.html. */
+/* ClipTape site behaviour. Shared by index.html and privacy.html. */
 document.documentElement.classList.add("js");
 
 (function () {
@@ -94,7 +94,7 @@ document.documentElement.classList.add("js");
     var slots = document.querySelectorAll("[data-stars]");
     if (!slots.length) return;
 
-    var CACHE_KEY = "mactape:stars";
+    var CACHE_KEY = "cliptape:stars";
 
     var format = function (count) {
       if (count < 1000) return String(count);
@@ -119,7 +119,7 @@ document.documentElement.classList.add("js");
       /* Private browsing can block sessionStorage; fall through to the fetch. */
     }
 
-    fetch("https://api.github.com/repos/svvayyy/MacTape", {
+    fetch("https://api.github.com/repos/svvayyy/ClipTape", {
       headers: { Accept: "application/vnd.github+json" },
     })
       .then(function (response) {

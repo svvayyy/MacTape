@@ -1,6 +1,6 @@
 # Security
 
-MacTape is local-only software, but capture and file handling still require careful security review.
+ClipTape is local-only software, but capture and file handling still require careful security review.
 
 Report a vulnerability privately to `hello@swayyy.dev`.
 

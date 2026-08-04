@@ -1,0 +1,57 @@
+import SwiftUI
+
+struct ClipTapeSettingsView: View {
+    @Environment(ClipTapeAppModel.self) private var appModel
+
+    var body: some View {
+        Form {
+            Section("Recordings") {
+                LabeledContent("Save folder") {
+                    Button(appModel.saveDirectoryLabel) {
+                        appModel.chooseSaveDirectory()
+                    }
+                }
+
+                Picker(
+                    "Output resolution",
+                    selection: Binding(
+                        get: { appModel.outputResolution },
+                        set: { appModel.outputResolution = $0 }
+                    )
+                ) {
+                    ForEach(CaptureResolution.allCases) { resolution in
+                        Text(resolution.title)
+                            .tag(resolution)
+                    }
+                }
+
+                Toggle(
+                    "Include system audio by default",
+                    isOn: Binding(
+                        get: { appModel.isSystemAudioEnabled },
+                        set: { appModel.isSystemAudioEnabled = $0 }
+                    )
+                )
+
+                Toggle(
+                    "Include microphone by default",
+                    isOn: Binding(
+                        get: { appModel.isMicrophoneEnabled },
+                        set: { value in
+                            Task {
+                                await appModel.setMicrophoneEnabled(value)
+                            }
+                        }
+                    )
+                )
+            }
+
+            Section("Privacy") {
+                Text("ClipTape records locally. Nothing is uploaded or analyzed.")
+                    .foregroundStyle(ClipTapeColor.textSecondary)
+            }
+        }
+        .formStyle(.grouped)
+        .frame(width: 460, height: 300)
+    }
+}
