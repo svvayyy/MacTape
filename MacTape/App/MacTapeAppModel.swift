@@ -32,7 +32,7 @@ final class MacTapeAppModel {
             preferences.set(outputResolution.rawValue, forKey: PreferenceKey.outputResolution)
         }
     }
-    var saveDirectory: URL
+    var saveDirectory: URL?
     var elapsedTime: TimeInterval = 0
     var lastOutputURL: URL?
     var isRefreshingTargets = false
@@ -44,6 +44,7 @@ final class MacTapeAppModel {
     private let screenAccessPreflight: () -> Bool
     private let screenAccessRequest: () -> Bool
     private let captureCatalogLoader: () async throws -> CaptureCatalog.Snapshot
+    private let suggestedSaveDirectory: URL
     private var currentApplication: SCRunningApplication?
     private var recorder: CaptureRecorder?
     private var recordingSession: RecordingSessionFiles?
@@ -72,6 +73,8 @@ final class MacTapeAppModel {
         self.screenAccessPreflight = screenAccessPreflight
         self.screenAccessRequest = screenAccessRequest
         self.captureCatalogLoader = captureCatalogLoader
+        suggestedSaveDirectory = fileManager.urls(for: .moviesDirectory, in: .userDomainMask).first
+            ?? fileManager.homeDirectoryForCurrentUser
         screenPermissionGranted = screenAccessPreflight()
 
         if preferences.object(forKey: PreferenceKey.systemAudio) == nil {
@@ -96,9 +99,7 @@ final class MacTapeAppModel {
                 forKey: PreferenceKey.saveDirectoryBookmark
             )
         } else {
-            let movies = fileManager.urls(for: .moviesDirectory, in: .userDomainMask).first
-                ?? fileManager.homeDirectoryForCurrentUser
-            saveDirectory = movies.appendingPathComponent("MacTape", isDirectory: true)
+            saveDirectory = nil
         }
     }
 
@@ -145,6 +146,10 @@ final class MacTapeAppModel {
 
     var recordingTargetTitle: String {
         activeCaptureTarget?.title ?? selectedTarget?.title ?? "Recording"
+    }
+
+    var saveDirectoryLabel: String {
+        saveDirectory?.lastPathComponent ?? "Choose Folder…"
     }
 
     func prepare() async {
@@ -236,7 +241,8 @@ final class MacTapeAppModel {
         }
     }
 
-    func chooseSaveDirectory() {
+    @discardableResult
+    func chooseSaveDirectory() -> Bool {
         let panel = NSOpenPanel()
         panel.title = "Choose where MacTape saves recordings"
         panel.prompt = "Choose"
@@ -244,10 +250,10 @@ final class MacTapeAppModel {
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
         panel.allowsMultipleSelection = false
-        panel.directoryURL = saveDirectory
+        panel.directoryURL = saveDirectory ?? suggestedSaveDirectory
 
         guard panel.runModal() == .OK, let selectedURL = panel.url else {
-            return
+            return false
         }
 
         do {
@@ -259,10 +265,12 @@ final class MacTapeAppModel {
                 access.bookmarkData,
                 forKey: PreferenceKey.saveDirectoryBookmark
             )
+            return true
         } catch {
             recordingState = .failed(
                 "MacTape could not remember access to that folder. Choose another folder and try again."
             )
+            return false
         }
     }
 
@@ -275,7 +283,11 @@ final class MacTapeAppModel {
     }
 
     func startRecording() async {
-        guard let selectedTarget, recordingState == .idle else {
+        guard
+            let selectedTarget,
+            recordingState == .idle,
+            let saveDirectory = requireSaveDirectory()
+        else {
             return
         }
 
@@ -466,7 +478,11 @@ final class MacTapeAppModel {
     }
 
     func takeScreenshot() async {
-        guard let selectedTarget, canTakeScreenshot else {
+        guard
+            let selectedTarget,
+            canTakeScreenshot,
+            let saveDirectory = requireSaveDirectory()
+        else {
             return
         }
 
@@ -518,6 +534,18 @@ final class MacTapeAppModel {
 
         isWaitingForScreenAccessChange = true
         NSWorkspace.shared.open(url)
+    }
+
+    private func requireSaveDirectory() -> URL? {
+        if let saveDirectory, saveDirectoryAccess != nil {
+            return saveDirectory
+        }
+
+        guard chooseSaveDirectory() else {
+            return nil
+        }
+
+        return saveDirectory
     }
 
     private func startDurationUpdates() {

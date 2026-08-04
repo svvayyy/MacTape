@@ -7,7 +7,7 @@ struct MacTapeSettingsView: View {
         Form {
             Section("Recordings") {
                 LabeledContent("Save folder") {
-                    Button(appModel.saveDirectory.lastPathComponent) {
+                    Button(appModel.saveDirectoryLabel) {
                         appModel.chooseSaveDirectory()
                     }
                 }

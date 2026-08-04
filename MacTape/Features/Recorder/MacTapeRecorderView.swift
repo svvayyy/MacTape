@@ -156,7 +156,7 @@ struct MacTapeRecorderView: View {
                                 .foregroundStyle(MacTapeColor.textSecondary)
                                 .frame(width: 20)
 
-                            Text(appModel.saveDirectory.lastPathComponent)
+                            Text(appModel.saveDirectoryLabel)
                                 .macTapeText(.body)
                                 .foregroundStyle(MacTapeColor.textPrimary)
                                 .lineLimit(1)
@@ -170,7 +170,7 @@ struct MacTapeRecorderView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Save folder")
-                .accessibilityValue(appModel.saveDirectory.path)
+                .accessibilityValue(appModel.saveDirectory?.path ?? "No folder selected")
             }
 
             HStack(spacing: MacTapeSpacing.small) {

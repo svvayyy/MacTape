@@ -202,6 +202,28 @@ struct MacTapeTests {
         )
     }
 
+    @Test("A new install does not preset a save folder")
+    @MainActor
+    func newInstallRequiresFolderSelection() {
+        let suiteName = UUID().uuidString
+        let preferences = UserDefaults(suiteName: suiteName)!
+        defer {
+            preferences.removePersistentDomain(forName: suiteName)
+        }
+
+        let model = MacTapeAppModel(
+            preferences: preferences,
+            screenAccessPreflight: { false },
+            screenAccessRequest: { false },
+            captureCatalogLoader: {
+                CaptureCatalog.Snapshot(targets: [], currentApplication: nil)
+            }
+        )
+
+        #expect(model.saveDirectory == nil)
+        #expect(model.saveDirectoryLabel == "Choose Folder…")
+    }
+
     @Test("A one-segment session finalizes without transcoding")
     func oneSegmentFinalization() async throws {
         let directory = FileManager.default.temporaryDirectory
