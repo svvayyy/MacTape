@@ -15,9 +15,9 @@ Guides:
 
 [![Download on the Mac App Store](docs/assets/mac-app-store-badge.svg)](https://apps.apple.com/us/app/cliptape-screen-recorder/id6795628398)
 
-ClipTape is free and requires macOS 15 or newer.
+**Direct download:** [Download the signed and Apple-notarized ClipTape DMG](https://github.com/svvayyy/ClipTape/releases/download/v0.1.0-beta.2/ClipTape-0.1.0.dmg)
 
-Prefer a direct download? The signed and Apple-notarized [ClipTape 0.1.0 beta 2 disk image](https://github.com/svvayyy/ClipTape/releases/download/v0.1.0-beta.2/ClipTape-0.1.0.dmg) remains available as an alternative. Open the disk image, drag ClipTape into Applications, then launch it from there. The direct-download beta does not update through the App Store.
+ClipTape is free and requires macOS 15 or newer. The App Store version receives updates through the App Store. The direct-download DMG is ClipTape 0.1.0 beta 2; open it, drag ClipTape into Applications, and launch it from there.
 
 ## Product
 
