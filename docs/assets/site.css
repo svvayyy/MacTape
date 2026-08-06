@@ -158,6 +158,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn-primary:hover{background:var(--red-deep);box-shadow:0 12px 40px -10px rgba(235,46,51,.9)}
 .btn-ghost{background:var(--panel);color:var(--ink)}
 .btn-ghost:hover{background:var(--panel-2)}
+.app-store-badge{display:inline-flex;align-items:center;height:44px;border-radius:7px;
+  transition:transform .18s var(--ease),filter .18s var(--ease)}
+.app-store-badge:hover{filter:brightness(1.08)}
+.app-store-badge:active{transform:scale(.975)}
+.app-store-badge img{width:172px;height:auto}
 
 /* hero */
 .hero{position:relative;padding:132px 0 40px}
@@ -466,6 +471,7 @@ footer{padding:56px 0 54px;background:rgba(0,0,0,.3)}
   .zeros{grid-template-columns:1fr 1fr}
   .zero b{font-size:38px}
   .hero-cta .btn,.cta-row .btn,.legal-cta .btn{width:100%;justify-content:center}
+  .hero-cta .app-store-badge,.cta-row .app-store-badge{width:100%;justify-content:center}
   .hero-cta,.cta-row,.legal-cta{width:100%}
   .step{align-items:flex-start}
   .row{flex-direction:column;gap:8px}

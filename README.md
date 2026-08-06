@@ -11,13 +11,13 @@ Guides:
 - [How to record your Mac screen with system audio](https://svvayyy.github.io/ClipTape/record-mac-screen-with-system-audio.html)
 - [Open-source macOS screen recorders compared](https://svvayyy.github.io/ClipTape/open-source-macos-screen-recorders.html)
 
-## Download
+## Install
 
-Download the signed and Apple-notarized public beta:
+[![Download on the Mac App Store](docs/assets/mac-app-store-badge.svg)](https://apps.apple.com/us/app/cliptape-screen-recorder/id6795628398)
 
-[Download ClipTape 0.1.0 for macOS](https://github.com/svvayyy/ClipTape/releases/download/v0.1.0-beta.2/ClipTape-0.1.0.dmg)
+ClipTape is free and requires macOS 15 or newer.
 
-Open the disk image, drag ClipTape into Applications, then launch it from there. ClipTape requires macOS 15 or newer.
+Prefer a direct download? The signed and Apple-notarized [ClipTape 0.1.0 beta 2 disk image](https://github.com/svvayyy/ClipTape/releases/download/v0.1.0-beta.2/ClipTape-0.1.0.dmg) remains available as an alternative. Open the disk image, drag ClipTape into Applications, then launch it from there. The direct-download beta does not update through the App Store.
 
 ## Product
 
@@ -41,7 +41,7 @@ ClipTape requires macOS 15 or newer because it uses modern ScreenCaptureKit reco
 
 ## Current status
 
-ClipTape 0.1.0 is available as a public beta. The current build includes:
+ClipTape 1.0 is available free on the Mac App Store. The current release includes:
 
 - Native SwiftUI menu bar operation
 - Display and window discovery
